@@ -21,6 +21,7 @@ class SpalashScreenState extends State<SpalashScreen>
   bool isLogin = false;
   String userId = '';
   late final FilterProvider filterProvider;
+  double? height, width;
   @override
   void initState() {
     filterProvider = Provider.of<FilterProvider>(context, listen: false);
@@ -54,6 +55,8 @@ class SpalashScreenState extends State<SpalashScreen>
 
   @override
   Widget build(BuildContext context) {
+    height = MediaQuery.of(context).size.height;
+    width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -65,23 +68,66 @@ class SpalashScreenState extends State<SpalashScreen>
         // ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Spacer(
+          children: [
+            const Spacer(
               flex: 3,
             ),
-            CircleAvatar(
-              radius: 75,
-              backgroundImage: AssetImage('assets/flameicon.jpg'),
-            ),
-            Spacer(
+            // const CircleAvatar(
+            //   radius: 75,
+            //   backgroundImage: AssetImage('assets/flameicon.jpg'),
+            // ),
+            Container(
+                alignment: Alignment.center,
+                height: height! * .2,
+                child: Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage('assets/logo.jpeg'),
+                          fit: BoxFit.cover)),
+                )),
+            const Spacer(
               flex: 1,
             ),
-            Text(
-              'Ticket Management System',
-              style: TextStyle(
-                  color: Color.fromARGB(223, 97, 4, 4),
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold),
+            Column(
+              mainAxisSize:
+                  MainAxisSize.min, // Use min to avoid unnecessary height
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the text vertically
+              crossAxisAlignment:
+                  CrossAxisAlignment.center, // Center the text horizontally
+              children: const [
+                Text(
+                  'Ticket',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color.fromARGB(223, 97, 4, 4),
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8.0), // Padding between lines
+                Text(
+                  'Management',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color.fromARGB(223, 97, 4, 4),
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8.0), // Padding between lines
+                Text(
+                  'System',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color.fromARGB(223, 97, 4, 4),
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
             Spacer(
               flex: 3,

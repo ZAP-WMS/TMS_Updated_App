@@ -24,6 +24,7 @@ class FilterProvider with ChangeNotifier {
   List<Map<String, dynamic>> get pendingData => _pendingData;
   List<Map<String, dynamic>> get servicependingData => _servicependingData;
   List<Map<String, dynamic>> get userSeen => _isUserSeen;
+  List<Map<String, dynamic>> get serviceProviderSeen => _isServiceProviderSeen;
   List<dynamic> get notifications => _notifications;
 
   List<String> get ticketId => _ticketId;
@@ -283,6 +284,7 @@ class FilterProvider with ChangeNotifier {
   }
 
   fetchNotificationData(String userId) async {
+    _notifications.clear();
     try {
       // Fetch data from the first collection
       DocumentSnapshot raisedTicketsSnapshot =
@@ -364,6 +366,7 @@ class FilterProvider with ChangeNotifier {
   }
 
   Future updateUserSeen(String userId) async {
+    _isUserSeen.clear();
     QuerySnapshot raisedTicketsSnapshot =
         await _firestore.collection('raisedTickets').get();
     List<DocumentSnapshot> raisedTickets = raisedTicketsSnapshot.docs;
@@ -410,8 +413,31 @@ class FilterProvider with ChangeNotifier {
     }
   }
 
+  Future getServiceNotificatioLength(String userId) async {
+    _isServiceProviderSeen.clear();
+    DocumentSnapshot raisedTicketsSnapshot =
+        await _firestore.collection('notifications').doc(userId).get();
+
+    Map<String, dynamic>? data =
+        raisedTicketsSnapshot.data() as Map<String, dynamic>?;
+    List<dynamic>? notifications = data?['notifications'] as List<dynamic>?;
+
+    if (notifications != null) {
+      for (int i = 0; i < notifications.length; i++) {
+        if (notifications[i]['isServiceProviderSeen'] == true) {
+          _isServiceProviderSeen.add(notifications[i]);
+          notifyListeners();
+        }
+      }
+    } else {
+      _isServiceProviderSeen.clear();
+      notifyListeners();
+    }
+  }
+
   Future updateServiceUserSeen(String userId) async {
     // Fetch tickets for each raised ticket
+
     List<dynamic> notificationData = [];
 
     DocumentSnapshot raisedTicketsSnapshot =
@@ -436,13 +462,19 @@ class FilterProvider with ChangeNotifier {
         }
         return notification;
       }).toList();
-      print(updatedNotifications);
 
       // Save the updated notifications list back to Firestore
       await _firestore
           .collection('notifications')
           .doc(userId)
           .update({'notifications': updatedNotifications});
+
+      // for (int i = 0; i < notifications.length; i++) {
+      //   if (notifications[i]['isServiceProviderSeen'] == true) {
+      //     _isServiceProviderSeen.add(notifications[i]);
+      //     notifyListeners();
+      //   }
+      // }
 
       print('Notification status updated successfully.');
     } else {

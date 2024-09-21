@@ -123,7 +123,7 @@ class ImageScreen extends StatefulWidget {
   const ImageScreen({
     required this.imageFiles,
     required this.initialIndex,
-    required String imageFile,
+    String? imageFile,
     required ticketId,
     required this.pageTitle,
   });

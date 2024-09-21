@@ -298,7 +298,7 @@ class _FilteredReportState extends State<FilteredReport> {
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Container(
+                      child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.30,
                         height: MediaQuery.of(context).size.height * 0.08,
                         child: Row(

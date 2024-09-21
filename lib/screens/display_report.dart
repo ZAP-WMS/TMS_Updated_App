@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:ticket_management_system/screens/image.dart';
 import 'package:ticket_management_system/utils/colors.dart';
 
 import '../provider/filter_provider.dart';
@@ -107,9 +108,10 @@ class _ReportDetailsState extends State<ReportDetails> {
       'Floor',
       'Room',
       'Asset',
-      'User',
+      'Username',
       'Service Provider',
       'Remark',
+      'Image',
     ];
     return Scaffold(
         appBar: AppBar(
@@ -136,18 +138,41 @@ class _ReportDetailsState extends State<ReportDetails> {
                       itemCount: filteredData.length,
                       itemBuilder: (context, index) {
                         final data = filteredData[index];
-                        print(data);
+                        print('data$data');
                         return Card(
                             elevation: 5,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Container(
-                                height: 250,
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: appColor, width: 2.0)),
+                                height: 370,
                                 child: ListView.builder(
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: titles.length,
                                   itemBuilder: (context, index2) {
                                     print(ticketListData);
+                                    String? imagePath = 'No Image Available';
+                                    List<String> imageFilePaths = [];
+
+                                    for (int i = 0;
+                                        i < data['imageFilePaths'].length;
+                                        i++) {
+                                      // imageFilePaths =
+                                      //     (data['imageFilePaths'] != null &&
+                                      //             data['imageFilePaths']
+                                      //                 .isNotEmpty)
+                                      //         ? data['imageFilePaths']
+                                      //         : '';
+                                      imagePath = (data['imageFilePaths'] !=
+                                                  null &&
+                                              data['imageFilePaths'].isNotEmpty)
+                                          ? data['imageFilePaths'][i]
+                                          : '';
+                                      imageFilePaths.add(imagePath!);
+                                    }
                                     message = [
                                       data['status'],
                                       data['tickets'],
@@ -159,12 +184,14 @@ class _ReportDetailsState extends State<ReportDetails> {
                                       data['floor'],
                                       data['room'],
                                       data['asset'],
-                                      data['user'],
+                                      data['name'],
                                       data['serviceProvider'],
-                                      data['remark']
+                                      data['remark'],
+                                      imagePath!
                                     ];
-                                    return ticketCard(
-                                        titles[index2], message[index2]);
+
+                                    return ticketCard(titles[index2],
+                                        message[index2], imageFilePaths);
                                   },
                                 ),
                               ),
@@ -584,33 +611,157 @@ class _ReportDetailsState extends State<ReportDetails> {
     setState(() {});
   }
 
-  Widget ticketCard(String title, String ticketListData) {
+  List<dynamic> parseTicketListData(String data) {
+    // This is just an example. Adjust the parsing logic as needed.
+    // Assuming items are separated by commas and image URLs start with 'http'.
+    return data.split(',').map((item) {
+      item = item.trim();
+      return item.startsWith('http') ? item : item;
+    }).toList();
+  }
+
+  Widget ticketCard(
+      String title, String ticketListData, List<String> imageFilePaths) {
+    List<dynamic> parsedData = parseTicketListData(ticketListData);
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        // Icon(icons, color: Colors.deepPurple),
-        // const SizedBox(width: 20),
-        SizedBox(
-          // height: MediaQuery.of(context).size.height,
-          width: 110,
-          child: Text(title,
-              textAlign: TextAlign.start,
-              style: const TextStyle(fontWeight: FontWeight.bold)),
-        ),
-        const SizedBox(width: 20),
-        Padding(
-          padding: const EdgeInsets.only(left: 18.0),
-          child: SizedBox(
-            // height: MediaQuery.of(context).size.height,
-            width: 200,
-            child: Text(
-              ticketListData,
-              textAlign: TextAlign.justify,
-            ),
-          ),
-        )
-      ],
-    );
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: parsedData.map((item) {
+          if (item is String && item.startsWith('http')) {
+            // If it's a URL, display an image
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ImageScreen(
+                                  pageTitle: 'pendingPage',
+                                  imageFiles: imageFilePaths,
+                                  initialIndex: 0,
+                                  ticketId: 'ticketList[0]',
+                                )));
+                  },
+                  child: Row(
+                    children: imageFilePaths.map<Widget>((item) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 4.0, horizontal: 4.0),
+                        child: Image.network(
+                          item,
+                          height: 50, // Set the height of the image
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            );
+          } else if (item is String) {
+            // If it's a text, display it
+            return Row(children: [
+              SizedBox(
+                  width: 110,
+                  child: Text(title,
+                      textAlign: TextAlign.start,
+                      style: const TextStyle(fontWeight: FontWeight.bold))),
+              const SizedBox(width: 20),
+              Padding(
+                  padding: const EdgeInsets.only(left: 18.0),
+                  child: SizedBox(
+                      // height: MediaQuery.of(context).size.height,
+                      width: 200,
+                      child: Column(
+                          children: parsedData.map((item) {
+                        if (item is String && item.startsWith('http')) {
+                          // If it's a URL, display an image
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Image.network(
+                              item,
+                              height: 50, // Set the height of the image
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        } else if (item is String) {
+                          // If it's a text, display it
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Text(
+                              item,
+                              textAlign: TextAlign.justify,
+                            ),
+                          );
+                        }
+                        return Container();
+                        // Return an empty container for unsupported types
+                      }).toList()
+                          //  [
+                          //   Text(
+                          //     ticketListData,
+                          //     textAlign: TextAlign.justify,
+                          //   ),
+                          // ],
+                          )))
+            ]);
+          }
+          return Container();
+          // Return an empty container for unsupported types
+        }).toList()
+
+        //  [
+        //   SizedBox(
+        //     // height: MediaQuery.of(context).size.height,
+        //     width: 110,
+        //     child: Text(title,
+        //         textAlign: TextAlign.start,
+        //         style: const TextStyle(fontWeight: FontWeight.bold)),
+        //   ),
+        //   const SizedBox(width: 20),
+        //   Padding(
+        //     padding: const EdgeInsets.only(left: 18.0),
+        //     child: SizedBox(
+        //       // height: MediaQuery.of(context).size.height,
+        //       width: 200,
+        //       child: Column(
+        //           children: parsedData.map((item) {
+        //         if (item is String && item.startsWith('http')) {
+        //           // If it's a URL, display an image
+        //           return Padding(
+        //             padding: const EdgeInsets.symmetric(vertical: 4.0),
+        //             child: Image.network(
+        //               item,
+        //               height: 50, // Set the height of the image
+        //               fit: BoxFit.cover,
+        //             ),
+        //           );
+        //         } else if (item is String) {
+        //           // If it's a text, display it
+        //           return Padding(
+        //             padding: const EdgeInsets.symmetric(vertical: 4.0),
+        //             child: Text(
+        //               item,
+        //               textAlign: TextAlign.justify,
+        //             ),
+        //           );
+        //         }
+        //         return Container();
+        //         // Return an empty container for unsupported types
+        //       }).toList()
+        //           //  [
+        //           //   Text(
+        //           //     ticketListData,
+        //           //     textAlign: TextAlign.justify,
+        //           //   ),
+        //           // ],
+        //           ),
+        //     ),
+        //   ),
+
+        );
   }
 
   Future<void> updateTicketStatus(

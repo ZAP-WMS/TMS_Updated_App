@@ -60,10 +60,13 @@ class _RaiseState extends State<Raise> {
   List<File>? filepath = [];
   List<String> images = [];
   late final FilterProvider filterProvider;
+  late final RaiseDataProvider raiseDataProvider;
 
   @override
   void initState() {
     filterProvider = Provider.of<FilterProvider>(context, listen: false);
+    raiseDataProvider = Provider.of<RaiseDataProvider>(context, listen: false);
+
     // getBuilding().whenComplete(() {
     //   getFloor().whenComplete(() {
     //     getRoom().whenComplete(() {
@@ -81,12 +84,18 @@ class _RaiseState extends State<Raise> {
 
   @override
   void dispose() {
-    workController.dispose();
-    buildingController.dispose();
-    floorController.dispose();
-    roomController.dispose();
-    assetController.dispose();
-    remarkController.dispose();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      raiseDataProvider.resetSelections();
+      images.clear();
+      Imagenames!.clear();
+    });
+
+    // workController.dispose();
+    // buildingController.dispose();
+    // floorController.dispose();
+    // roomController.dispose();
+    // assetController.dispose();
+    // remarkController.dispose();
     super.dispose();
   }
 
@@ -539,8 +548,8 @@ class _RaiseState extends State<Raise> {
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(SnackBar(
                                                     backgroundColor: appColor,
-                                                    content: const Text(
-                                                        'Your ticket has been raised successfully!!!')));
+                                                    content: Text(
+                                                        'Your ticket $ticketID has been raised successfully!!!')));
                                           });
                                         });
                                       }

@@ -10,7 +10,9 @@ import '../screens/splash_service.dart';
 int globalIndex = 0;
 
 class NotificationScreen_service extends StatefulWidget {
-  const NotificationScreen_service({super.key});
+  String userId;
+
+  NotificationScreen_service({super.key, required this.userId});
 
   @override
   State<NotificationScreen_service> createState() =>
@@ -30,22 +32,6 @@ class _NotificationScreen_serviceState
   FilterProvider? filterProvider;
   String? userId;
 
-  @override
-  void initState() {
-    initialize();
-
-    // fetchImageUrls();
-    // getNotificationScreen().whenComplete(() async {
-    //   // setNotificationIsSeen().whenComplete(() {
-
-    //   // });
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
-    // });
-    super.initState();
-  }
-
   Future<void> fetchImageUrls() async {
     ListResult result = await FirebaseStorage.instance.ref('Images/').listAll();
     List<String> urls = await Future.wait(
@@ -54,10 +40,10 @@ class _NotificationScreen_serviceState
     _imageUrls = urls;
   }
 
-  Future<void> initialize() async {
-    userId = await _splashService.getUserID();
-    setState(() {});
-  }
+  // Future<void> initialize() async {
+  //   userId = await _splashService.getUserID();
+  //   setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +58,7 @@ class _NotificationScreen_serviceState
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('notifications')
-              .doc(userId)
+              .doc(widget.userId)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {

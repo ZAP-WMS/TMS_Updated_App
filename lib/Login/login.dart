@@ -45,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Container(
                       height: MediaQuery.of(context).size.height,
                       width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           image: DecorationImage(
                               image: AssetImage('assets/logo.jpeg'),
                               fit: BoxFit.cover)),
@@ -59,11 +59,11 @@ class _LoginPageState extends State<LoginPage> {
               ],
             ),
             Positioned(
-              bottom: MediaQuery.of(context).size.height * 0.2,
+              bottom: MediaQuery.of(context).size.height * 0.3,
               child: Card(
                 elevation: 10,
                 child: Container(
-                  height: MediaQuery.of(context).size.height * 0.4,
+                  height: MediaQuery.of(context).size.height * 0.35,
                   width: MediaQuery.of(context).size.width * 0.85,
                   padding: const EdgeInsets.all(20.0),
                   alignment: Alignment.center,

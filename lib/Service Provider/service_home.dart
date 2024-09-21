@@ -61,8 +61,6 @@ class HomeserviceState extends State<Homeservice>
   void initState() {
     filterProvider = Provider.of<FilterProvider>(context, listen: false);
 
-    Provider.of<FilterProvider>(context, listen: false)
-        .fetchNotificationData(widget.userID);
     super.initState();
     // getNotification().whenComplete(() {
     //   setState(() {});
@@ -71,6 +69,12 @@ class HomeserviceState extends State<Homeservice>
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<FilterProvider>(context, listen: false)
+        .fetchNotificationData(widget.userID);
+
+    Provider.of<FilterProvider>(context, listen: false)
+        .getServiceNotificatioLength(widget.userID);
+
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
@@ -85,16 +89,16 @@ class HomeserviceState extends State<Homeservice>
             IconButton(
                 onPressed: () {
                   Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const NotificationScreen_service()))
-                      .whenComplete(() {
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NotificationScreen_service(
+                                userId: widget.userID,
+                              ))).whenComplete(() {
                     filterProvider
                         .updateServiceUserSeen(widget.userID)
                         .whenComplete(() {
                       Provider.of<FilterProvider>(context, listen: false)
-                          .addTicketId('New Ticket');
+                          .getServiceNotificatioLength(widget.userID);
                     });
                   });
                 },
@@ -106,17 +110,22 @@ class HomeserviceState extends State<Homeservice>
             Positioned(
                 top: 0,
                 right: 0,
-                child: CircleAvatar(
-                  radius: 10,
-                  backgroundColor: Colors.red,
-                  child: CircleAvatar(
-                    radius: 10,
-                    backgroundColor: Colors.red,
-                    child: Text(
-                      filterProvider.notifications.length.toString(),
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                    ),
-                  ),
+                child: Consumer<FilterProvider>(
+                  builder: (context, value, child) {
+                    return CircleAvatar(
+                      radius: 10,
+                      backgroundColor: Colors.red,
+                      child: CircleAvatar(
+                        radius: 10,
+                        backgroundColor: Colors.red,
+                        child: Text(
+                          filterProvider.serviceProviderSeen.length.toString(),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
+                        ),
+                      ),
+                    );
+                  },
                 ))
           ]),
           actions: [

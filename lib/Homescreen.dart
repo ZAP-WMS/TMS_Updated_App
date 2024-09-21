@@ -181,6 +181,9 @@ class HomeScreenState extends State<HomeScreen>
     Provider.of<FilterProvider>(context, listen: false)
         .fetchAllData(widget.userID);
 
+    // Provider.of<FilterProvider>(context, listen: false)
+    //     .updateUserSeen(widget.userID);
+
     var screenSize = MediaQuery.of(context).size;
     return ReponsiveWidget(
       child: Scaffold(
@@ -221,17 +224,21 @@ class HomeScreenState extends State<HomeScreen>
                 ),
               ),
               Positioned(
-                top: 0,
-                right: 0,
-                child: CircleAvatar(
-                  radius: 10,
-                  backgroundColor: Colors.red,
-                  child: Text(
-                    filterProvider.userSeen.length.toString(),
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ),
-              )
+                  top: 0,
+                  right: 0,
+                  child: Consumer<FilterProvider>(
+                    builder: (context, value, child) {
+                      return CircleAvatar(
+                        radius: 10,
+                        backgroundColor: Colors.red,
+                        child: Text(
+                          filterProvider.userSeen.length.toString(),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
+                        ),
+                      );
+                    },
+                  ))
             ],
           ),
           actions: [
