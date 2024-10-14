@@ -9,6 +9,7 @@ class ReportProvider extends ChangeNotifier {
   List<String> _assetList = [];
   List<String> _allWorkData = [];
   List<String> _serviceProviders = [];
+  List<String> _users = [];
 
   List<String> get buildingNumberList => _buildingNumberList;
   List<String> get floorNumberList => _floorNumberList;
@@ -17,6 +18,7 @@ class ReportProvider extends ChangeNotifier {
   List<String> get assetNumberList => _assetList;
   List<String> get workNumberList => _allWorkData;
   List<String> get serviceProviders => _serviceProviders;
+  List<String> get users => _users;
 
   String? _selectStatus;
   String? _selectedBuilding;
@@ -26,6 +28,7 @@ class ReportProvider extends ChangeNotifier {
   String? _selectedTicket;
   String? _selectedServiceProvider;
   String? _selectedAsset;
+  String? _selectedUsers;
 
   String? get selectedStatus => _selectStatus;
   String? get selectedBuilding => _selectedBuilding;
@@ -35,6 +38,7 @@ class ReportProvider extends ChangeNotifier {
   String? get selectedTicket => _selectedTicket;
   String? get selectedService => _selectedServiceProvider;
   String? get selectedAsset => _selectedAsset;
+  String? get selectUser => _selectedUsers;
 
   void building(String value) {
     _selectedBuilding = value;
@@ -68,6 +72,11 @@ class ReportProvider extends ChangeNotifier {
 
   void serviceProvider(String value) {
     _selectedServiceProvider = value;
+    notifyListeners();
+  }
+
+  void usersName(String value) {
+    _selectedUsers = value;
     notifyListeners();
   }
 
@@ -125,7 +134,7 @@ class ReportProvider extends ChangeNotifier {
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         // Access the document's data as a Map
-        tickets = querySnapshot.docs.map((e) => e.id).toList();
+        tickets.addAll(querySnapshot.docs.map((e) => e.id).toList());
       }
     }
 
@@ -224,8 +233,58 @@ class ReportProvider extends ChangeNotifier {
         if (documentSnapshot.exists) {
           Map<String, dynamic> data =
               documentSnapshot.data() as Map<String, dynamic>;
-          if (data.containsKey('fullName')) {
-            _serviceProviders.add(data['fullName']);
+
+          if (data.containsKey('role') &&
+              data['role'] is List &&
+              data['role'].isNotEmpty) {
+            if (data.containsKey('fullName')) {
+              _serviceProviders.add(data['fullName']);
+            }
+          }
+        }
+      }
+
+      // Notify listeners after updating the list
+      notifyListeners();
+    } catch (e) {
+      // Handle any errors (optional)
+      print('Error fetching service providers: $e');
+    }
+  }
+
+  Future<void> fetchUser() async {
+    try {
+      // Clear existing data
+      _users = [];
+
+      // Fetch document IDs from 'members' collection
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('members')
+          .where('role', isNotEqualTo: null)
+          .get();
+
+      List<String> tempData = [];
+      if (querySnapshot.docs.isNotEmpty) {
+        tempData = querySnapshot.docs.map((e) => e.id).toList();
+      }
+
+      // Fetch each document and add to serviceProviders
+      for (var id in tempData) {
+        DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+            .collection('members')
+            .doc(id)
+            .get();
+
+        if (documentSnapshot.exists) {
+          Map<String, dynamic> data =
+              documentSnapshot.data() as Map<String, dynamic>;
+
+          if (data.containsKey('role') &&
+              data['role'] is List &&
+              data['role'].isEmpty) {
+            if (data.containsKey('fullName')) {
+              _users.add(data['fullName']);
+            }
           }
         }
       }
@@ -250,6 +309,7 @@ class ReportProvider extends ChangeNotifier {
     _selectedWork = null;
     _selectedAsset = null;
     _selectedServiceProvider = null;
+    _selectedUsers = null;
     notifyListeners();
   }
 }

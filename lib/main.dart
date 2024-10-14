@@ -42,6 +42,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => PiechartProvider()),
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ReportProvider()),
       ],
       child: MaterialApp(
+        navigatorObservers: [routeObserver],
         debugShowCheckedModeBanner: false,
         title: 'TMS APP',
         theme: ThemeData(

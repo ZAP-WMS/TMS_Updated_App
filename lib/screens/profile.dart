@@ -37,7 +37,7 @@ class _profileState extends State<profile> {
               ))
             : Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -50,13 +50,13 @@ class _profileState extends State<profile> {
                           ),
                           elevation: 20,
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(10.0),
                             child: Column(
                               children: [
                                 Align(
                                     alignment: Alignment.centerLeft,
                                     child: Padding(
-                                      padding: const EdgeInsets.all(25.0),
+                                      padding: const EdgeInsets.all(15.0),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment:
@@ -153,7 +153,7 @@ class _profileState extends State<profile> {
         children: [
           IntrinsicWidth(
             child: Container(
-              width: MediaQuery.of(context).size.width * 0.30,
+              width: MediaQuery.of(context).size.width * 0.35,
               decoration: BoxDecoration(
                   color: Color.fromARGB(255, 141, 36, 41),
                   borderRadius: BorderRadius.circular(8.0)),

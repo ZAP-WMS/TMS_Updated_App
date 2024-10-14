@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -238,6 +239,33 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
       // String year, String month,
       String documents,
       String ticketNumber) async {
+    Navigator.pop(context);
+    showCupertinoDialog(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: const [
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: Center(
+                child: CircularProgressIndicator(
+                    color: Color.fromARGB(255, 151, 64, 69)),
+              ),
+            ),
+            Text(
+              'Solving...',
+              style: TextStyle(
+                  color: Color.fromARGB(255, 151, 64, 69),
+                  fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            )
+          ],
+        ),
+      ),
+    );
+
     String currentMonth = DateFormat('MMM').format(DateTime.now());
     String currentDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
     DateTime a1 = DateFormat('dd-MM-yyyy').parse(documents);
@@ -257,12 +285,27 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
       "isUserSeen": true,
       'closedDate': currentDate
     }).whenComplete(() async {
+      await FirebaseFirestore.instance
+          .collection("UserNotification")
+          .doc(documents)
+          .collection('tickets')
+          .doc(ticketNumber)
+          .update({
+        'status': 'Close',
+        'tat': a3.inDays,
+        "isSeen": false,
+        "isUserSeen": true,
+        'closedDate': currentDate
+      });
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            "Ticket Resolved!",
-            style: TextStyle(
-              color: Colors.white,
+          content: Center(
+            child: Text(
+              "Ticket Resolved!",
+              style: TextStyle(
+                color: Colors.white,
+              ),
             ),
           ),
           backgroundColor: Colors.green,
@@ -305,10 +348,7 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
                       final DateTime now = DateTime.now();
                       final formattedDate = dateFormatter.format(now);
                       final formattedTime = timeFormatter.format(now);
-                      storeCompletedTicket(documents, ticketNumber)
-                          .whenComplete(() {
-                        Navigator.pop(context);
-                      });
+                      storeCompletedTicket(documents, ticketNumber);
                     },
                     //  },
                     child: const Text(

@@ -67,7 +67,6 @@ class RaiseDataProvider extends ChangeNotifier {
     await getBuilding();
     await getFloor();
     await getRoom();
-    await getAsset();
     await getWork();
   }
 
@@ -110,23 +109,33 @@ class RaiseDataProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> getAsset() async {
-    if (_selectedBuilding == null ||
-        _selectedFloor == null ||
-        _selectedRoom == null) return;
-
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('buildingNumbers')
-        .doc(_selectedBuilding)
-        .collection('floorNumbers')
-        .doc(_selectedFloor)
-        .collection('roomNumbers')
-        .doc(_selectedRoom)
-        .collection('assets')
-        .get();
-    if (querySnapshot.docs.isNotEmpty) {
-      assetOptions = querySnapshot.docs.map((e) => e.id).toList();
-      notifyListeners();
+  Future<void> getAsset(String selected, String selectedRoom) async {
+    if (selected.isNotEmpty) {
+      selectedAsset == null;
+      assetOptions.clear();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          // .collection('buildingNumbers')
+          // .doc(_selectedBuilding)
+          // .collection('floorNumbers')
+          // .doc(_selectedFloor)
+          // .collection('roomNumbers')
+          // .doc(_selectedRoom)
+          .collection('assets')
+          .where('workListByAsset', isEqualTo: selected)
+          .get();
+      QuerySnapshot querySnapshot2 = await FirebaseFirestore.instance
+          .collection('buildingNumbers')
+          .doc(_selectedBuilding)
+          .collection('floorNumbers')
+          .doc(_selectedFloor)
+          .collection('roomNumbers')
+          .doc(selectedRoom)
+          .collection('assets')
+          .get();
+      if ((querySnapshot.docs.isNotEmpty) && (querySnapshot2.docs.isNotEmpty)) {
+        assetOptions = querySnapshot.docs.map((e) => e.id).toList();
+        notifyListeners();
+      }
     }
   }
 

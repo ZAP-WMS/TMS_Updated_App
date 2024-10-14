@@ -5,19 +5,23 @@ import 'package:ticket_management_system/screens/image.dart';
 import 'package:ticket_management_system/utils/colors.dart';
 
 import '../provider/filter_provider.dart';
+import '../widget/loading_page.dart';
 
 // ignore: must_be_immutable
 class ReportDetails extends StatefulWidget {
-  ReportDetails(
-      {super.key,
-      this.userId,
-      required this.ticketList,
-      required this.ticketData,
-      required this.filterFieldData});
+  ReportDetails({
+    super.key,
+    this.userId,
+    required this.ticketList,
+    required this.ticketData,
+    required this.filterFieldData,
+    required this.userRole,
+  });
   String? userId;
   List<dynamic> ticketList = [];
   List<dynamic> ticketData = [];
   Map<String, dynamic> filterFieldData;
+  List<String>? userRole;
   @override
   State<ReportDetails> createState() => _ReportDetailsState();
 }
@@ -34,7 +38,7 @@ class _ReportDetailsState extends State<ReportDetails> {
     'asset',
     'serviceProvider',
     'status',
-    'work',
+    'work'
   ];
   List<List<String>> rowData = [];
 
@@ -83,8 +87,8 @@ class _ReportDetailsState extends State<ReportDetails> {
   void initState() {
     filterProvider = Provider.of<FilterProvider>(context, listen: false);
 
-    Provider.of<FilterProvider>(context, listen: false)
-        .fetchAndFilterData(widget.userId!, widget.filterFieldData);
+    Provider.of<FilterProvider>(context, listen: false).fetchAndFilterData(
+        widget.userRole!, widget.userId!, widget.filterFieldData);
     // getdata().whenComplete(() => setState(() {
     //       isLoading = false;
     //     }));
@@ -128,10 +132,11 @@ class _ReportDetailsState extends State<ReportDetails> {
           final filteredData = filterProvider.filteredData;
 
           return filterProvider.isLoading
-              ? Center(
-                  child: CircularProgressIndicator(
-                  color: appColor,
-                ))
+              ? const LoadingPage()
+              // Center(
+              //     child: CircularProgressIndicator(
+              //     color: appColor,
+              //   ))
               : filterProvider.filteredData.isEmpty
                   ? const Center(child: Text('No data available'))
                   : ListView.builder(
@@ -189,7 +194,6 @@ class _ReportDetailsState extends State<ReportDetails> {
                                       data['remark'],
                                       imagePath!
                                     ];
-
                                     return ticketCard(titles[index2],
                                         message[index2], imageFilePaths);
                                   },
@@ -624,12 +628,13 @@ class _ReportDetailsState extends State<ReportDetails> {
       String title, String ticketListData, List<String> imageFilePaths) {
     List<dynamic> parsedData = parseTicketListData(ticketListData);
     return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: parsedData.map((item) {
           if (item is String && item.startsWith('http')) {
             // If it's a URL, display an image
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: GestureDetector(
@@ -669,43 +674,44 @@ class _ReportDetailsState extends State<ReportDetails> {
                       textAlign: TextAlign.start,
                       style: const TextStyle(fontWeight: FontWeight.bold))),
               const SizedBox(width: 20),
-              Padding(
-                  padding: const EdgeInsets.only(left: 18.0),
-                  child: SizedBox(
-                      // height: MediaQuery.of(context).size.height,
-                      width: 200,
-                      child: Column(
-                          children: parsedData.map((item) {
-                        if (item is String && item.startsWith('http')) {
-                          // If it's a URL, display an image
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Image.network(
-                              item,
-                              height: 50, // Set the height of the image
-                              fit: BoxFit.cover,
-                            ),
-                          );
-                        } else if (item is String) {
-                          // If it's a text, display it
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Text(
-                              item,
-                              textAlign: TextAlign.justify,
-                            ),
-                          );
-                        }
-                        return Container();
-                        // Return an empty container for unsupported types
-                      }).toList()
-                          //  [
-                          //   Text(
-                          //     ticketListData,
-                          //     textAlign: TextAlign.justify,
-                          //   ),
-                          // ],
-                          )))
+              SizedBox(
+                  // height: MediaQuery.of(context).size.height,
+                  width: 200,
+                  child: Column(
+                      children: parsedData.map((item) {
+                    if (item is String && item.startsWith('http')) {
+                      // If it's a URL, display an image
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
+                        child: Image.network(
+                          item,
+                          height: 50, // Set the height of the image
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    } else if (item is String) {
+                      // If it's a text, display it
+                      return Container(
+                        width: 150,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4.0),
+                          child: Text(
+                            item,
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      );
+                    }
+                    return Container();
+                    // Return an empty container for unsupported types
+                  }).toList()
+                      //  [
+                      //   Text(
+                      //     ticketListData,
+                      //     textAlign: TextAlign.justify,
+                      //   ),
+                      // ],
+                      ))
             ]);
           }
           return Container();

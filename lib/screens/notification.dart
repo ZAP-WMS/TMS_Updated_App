@@ -76,7 +76,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromARGB(255, 141, 36, 41),
+          backgroundColor: const Color.fromARGB(255, 141, 36, 41),
           title: const Text('Notifications'),
         ),
         body: _isLoading
@@ -351,12 +351,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget notificaionCard(String time, String ticketId, String message) {
     return Card(
       elevation: 5.0,
-      margin: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       child: Container(
-          height: 80,
+          height: 100,
           padding: EdgeInsets.all(10),
           decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.circular(10)),
+              color: Colors.white, borderRadius: BorderRadius.circular(15)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -370,12 +370,35 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       color: blackColor,
                     ),
                   ),
-                  Text(
-                    ticketId,
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: blackColor,
-                        fontWeight: FontWeight.bold),
+                  Row(
+                    children: [
+                      Text(
+                        ticketId,
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: blackColor,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                          onPressed: () async {
+                            await FirebaseFirestore.instance
+                                .collection('UserNotification')
+                                .doc(time)
+                                .collection('tickets')
+                                .doc(ticketId)
+                                .delete()
+                                .whenComplete(() {
+                              Provider.of<FilterProvider>(context,
+                                      listen: false)
+                                  .fetchAllData(userId!);
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.delete_forever,
+                            color: Colors.red,
+                            size: 20,
+                          ))
+                    ],
                   )
                 ],
               ),

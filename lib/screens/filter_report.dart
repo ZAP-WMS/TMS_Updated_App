@@ -80,12 +80,14 @@ class _FilteredReportState extends State<FilteredReport> {
   DateTime? rangeEndDate = DateTime.now();
   final SplashService _splashService = SplashService();
   late ReportProvider dataProvider = ReportProvider();
+  List<String>? userRole = [];
   // String? userId;
   @override
   void initState() {
     dataProvider = Provider.of<ReportProvider>(context, listen: false);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      getUserRole();
       // Delayed execution of async methods after initial build
       initialize();
     });
@@ -106,8 +108,15 @@ class _FilteredReportState extends State<FilteredReport> {
     await dataProvider.fetchRoomNumbers();
     await dataProvider.fetchWorkList();
     await dataProvider.fetchServiceProvider();
+    await dataProvider.fetchUser();
     await dataProvider.fetchAssets();
     // userId = await _splashService.getUserID();
+  }
+
+  getUserRole() async {
+    userRole = await _splashService.getUserName(widget.userID);
+    isLoading = false;
+    setState(() {});
   }
 
   @override
@@ -141,277 +150,290 @@ class _FilteredReportState extends State<FilteredReport> {
         //   )
         // ],
       ),
-      body:
-          //  isLoading
-          //     ? const Center(child: CircularProgressIndicator())
-          //     :
-          Consumer<ReportProvider>(
-        builder: (context, provider, child) {
-          return Container(
-            margin: const EdgeInsets.only(top: 20),
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Card(
-                        elevation: 5,
-                        child: SizedBox(
-                          width: 345,
-                          height: 70,
-                          child: TextButton(
-                            onPressed: () {
-                              pickDateRange();
-                              setState(() {});
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Consumer<ReportProvider>(
+              builder: (context, provider, child) {
+                return Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                              elevation: 5,
+                              child: SizedBox(
+                                width: 345,
+                                height: 70,
+                                child: TextButton(
+                                  onPressed: () {
+                                    pickDateRange();
+                                    setState(() {});
+                                  },
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      // Text(
+                                      //   textAlign: TextAlign.justify,
+                                      //   'Search Date: \n $selectedDate',
+                                      //   style: const TextStyle(
+                                      //       color: Colors.black,
+                                      //       fontSize: 16),
+                                      // ),
+                                      child: RichText(
+                                          text: TextSpan(
+                                              text: 'Search Date: \n',
+                                              style: const TextStyle(
+                                                  color: Colors.black),
+                                              children: [
+                                            TextSpan(
+                                                text: selectedStartDate
+                                                        .isNotEmpty
+                                                    ? " $selectedStartDate TO $selectedEndDate  "
+                                                    : '',
+                                                style: const TextStyle(
+                                                    backgroundColor:
+                                                        Colors.purple,
+                                                    color: Colors.white)),
+                                          ])),
+                                    ),
+                                  ),
+                                ),
+                              ))),
+                      Row(
+                        children: [
+                          customDropDown(
+                            customDropDownList: ['Open', 'Close'],
+                            hintText: 'Search Status',
+                            index: 0,
+                            selectedValue: provider.selectedStatus,
+                            onChanged: (value) {
+                              provider.status(value.toString());
                             },
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                // Text(
-                                //   textAlign: TextAlign.justify,
-                                //   'Search Date: \n $selectedDate',
-                                //   style: const TextStyle(
-                                //       color: Colors.black,
-                                //       fontSize: 16),
-                                // ),
-                                child: RichText(
-                                    text: TextSpan(
-                                        text: 'Search Date: \n',
-                                        style: const TextStyle(
-                                            color: Colors.black),
-                                        children: [
-                                      TextSpan(
-                                          text: selectedStartDate.isNotEmpty
-                                              ? " $selectedStartDate TO $selectedEndDate  "
-                                              : '',
-                                          style: const TextStyle(
-                                              backgroundColor: Colors.purple,
-                                              color: Colors.white)),
-                                    ])),
+                            searchController: statusController,
+                          ),
+                          customDropDown(
+                            customDropDownList: provider.floorNumberList,
+                            hintText: 'Select Floor',
+                            index: 0,
+                            selectedValue: provider.selectedFloor,
+                            onChanged: (value) {
+                              provider.floor(value.toString());
+                            },
+                            searchController: floorController,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          customDropDown(
+                            customDropDownList: provider.ticketNumberList,
+                            hintText: 'Select Ticket',
+                            index: 0,
+                            selectedValue: provider.selectedTicket,
+                            onChanged: (value) {
+                              provider.ticket(value.toString());
+                            },
+                            searchController: ticketController,
+                          ),
+                          customDropDown(
+                            customDropDownList: provider.roomNumberList,
+                            hintText: 'Search Room',
+                            index: 0,
+                            selectedValue: provider.selectedRoom,
+                            onChanged: (value) {
+                              provider.room(value.toString());
+                            },
+                            searchController: roomController,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          customDropDown(
+                            customDropDownList: provider.workNumberList,
+                            hintText: 'Select Work',
+                            index: 0,
+                            selectedValue: provider.selectedWork,
+                            onChanged: (value) {
+                              provider.work(value.toString());
+                              // setState(() {
+                              //   // selectedValue = value;
+                              // });
+                            },
+                            searchController: workController,
+                          ),
+                          customDropDown(
+                            customDropDownList: provider.assetNumberList,
+                            hintText: 'Search Asset',
+                            index: 0,
+                            selectedValue: provider.selectedAsset,
+                            onChanged: (value) {
+                              provider.asset(value.toString());
+                            },
+                            searchController: assetController,
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          customDropDown(
+                            customDropDownList: provider.buildingNumberList,
+                            hintText: 'Search Building',
+                            index: 0,
+                            selectedValue: provider.selectedBuilding,
+                            onChanged: (value) {
+                              provider.building(value.toString());
+                            },
+                            searchController: buildingController,
+                          ),
+                          customDropDown(
+                            customDropDownList: userRole!.isEmpty
+                                ? provider.serviceProviders
+                                : provider.users,
+                            hintText: userRole!.isEmpty
+                                ? 'Search Service Provider'
+                                : 'Search Users',
+                            index: 0,
+                            selectedValue: userRole!.isEmpty
+                                ? provider.selectedService
+                                : provider.selectUser,
+                            onChanged: (value) {
+                              userRole!.isEmpty
+                                  ? provider.serviceProvider(value.toString())
+                                  : provider.usersName(value.toString());
+                            },
+                            searchController: serviceProviderController,
+                          ),
+                        ],
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(top: 10),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.30,
+                              height: MediaQuery.of(context).size.height * 0.08,
+                              child: Row(
+                                children: [
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor: appColor),
+                                    onPressed: () {
+                                      showSavingDialog(context, 'Fetching...');
+                                      Map<String, dynamic> selectedItemsMap = {
+                                        'selectedStatus':
+                                            provider.selectedStatus,
+                                        'selectedTicket':
+                                            provider.selectedTicket,
+                                        'selectedWork': provider.selectedWork,
+                                        'selectedBuilding':
+                                            provider.selectedBuilding,
+                                        'selectedFloor': provider.selectedFloor,
+                                        'selectedRoom': provider.selectedRoom,
+                                        'selectedAsset': provider.selectedAsset,
+                                        'selectedServiceProvider':
+                                            provider.selectedService,
+                                        'selectedStartDate': selectedStartDate,
+                                        'selectedEndDate': selectedEndDate,
+                                      };
+
+                                      bool atLeastOneAvailable =
+                                          selectedItemsMap.values.any((value) {
+                                        if (value == null) {
+                                          return false; // Check if the value is null
+                                        }
+                                        if (value is String && value.isEmpty) {
+                                          return false; // Check if the value is an empty string
+                                        }
+                                        return true; // Return true if the value is not null and not empty
+                                      });
+
+                                      if (atLeastOneAvailable) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) {
+                                            return ReportDetails(
+                                              userId: widget.userID,
+                                              ticketList: ticketList,
+                                              ticketData: filterData,
+                                              filterFieldData: selectedItemsMap,
+                                              userRole:userRole!
+                                            );
+                                          }),
+                                        ).whenComplete(() {
+                                          provider.resetSelections();
+                                          // print('ticketList $ticketList');
+                                          // print('filterData $filterData');
+                                          // selectedWork = null;
+                                          // selectedServiceProvider = null;
+                                          // selectedStatus = null;
+                                          // selectedAsset = null;
+                                          // selectedUser = null;
+                                          // selectedRoom = null;
+                                          // selectedFloor = null;
+                                          // selectedbuilding = null;
+                                          // selectedTicket = null;
+                                          // selectedStartDate = '';
+                                          // selectedEndDate = '';
+                                          // // ticketList.clear();
+                                          // // filterData.clear();
+                                          // setState(() {});
+                                          Navigator.pop(context);
+                                        });
+                                      } else {
+                                        Navigator.pop(context);
+                                        popupAlertmessage(
+                                            'Please select any filter');
+                                      }
+                                      //});
+                                    },
+                                    child: const Text('Get Report'),
+                                  ),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  // ElevatedButton(
+                                  //   onPressed: () {
+                                  //     Navigator.push(
+                                  //             context,
+                                  //             MaterialPageRoute(
+                                  //                 builder: (context) =>
+                                  //                     const Refreshscreen()))
+                                  //         .whenComplete(() {
+                                  //       selectedWork = null;
+                                  //       selectedServiceProvider = null;
+                                  //       selectedStatus = null;
+                                  //       selectedAsset = null;
+                                  //       selectedUser = null;
+                                  //       selectedRoom = null;
+                                  //       selectedFloor = null;
+                                  //       selectedbuilding = null;
+                                  //       selectedTicket = null;
+                                  //       selectedStartDate = '';
+                                  //       selectedEndDate = '';
+                                  //       ticketList.clear();
+                                  //       filterData.clear();
+                                  //       setState(() {});
+                                  //     });
+                                  //   },
+                                  //   child: const Text('Refresh'),
+                                  // ),
+                                ],
                               ),
                             ),
                           ),
-                        ))),
-                Row(
-                  children: [
-                    customDropDown(
-                      customDropDownList: ['Open', 'Close'],
-                      hintText: 'Search Status',
-                      index: 0,
-                      selectedValue: provider.selectedStatus,
-                      onChanged: (value) {
-                        provider.status(value.toString());
-                      },
-                      searchController: statusController,
-                    ),
-                    customDropDown(
-                      customDropDownList: provider.floorNumberList,
-                      hintText: 'Select Floor',
-                      index: 0,
-                      selectedValue: provider.selectedFloor,
-                      onChanged: (value) {
-                        provider.floor(value.toString());
-                      },
-                      searchController: floorController,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    customDropDown(
-                      customDropDownList: provider.ticketNumberList,
-                      hintText: 'Select Ticket',
-                      index: 0,
-                      selectedValue: provider.selectedTicket,
-                      onChanged: (value) {
-                        provider.ticket(value.toString());
-                      },
-                      searchController: ticketController,
-                    ),
-                    customDropDown(
-                      customDropDownList: provider.roomNumberList,
-                      hintText: 'Search Room',
-                      index: 0,
-                      selectedValue: provider.selectedRoom,
-                      onChanged: (value) {
-                        provider.room(value.toString());
-                      },
-                      searchController: roomController,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    customDropDown(
-                      customDropDownList: provider.workNumberList,
-                      hintText: 'Select Work',
-                      index: 0,
-                      selectedValue: provider.selectedWork,
-                      onChanged: (value) {
-                        provider.work(value.toString());
-                        // setState(() {
-                        //   // selectedValue = value;
-                        // });
-                      },
-                      searchController: workController,
-                    ),
-                    customDropDown(
-                      customDropDownList: provider.assetNumberList,
-                      hintText: 'Search Asset',
-                      index: 0,
-                      selectedValue: provider.selectedAsset,
-                      onChanged: (value) {
-                        provider.asset(value.toString());
-                      },
-                      searchController: assetController,
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    customDropDown(
-                      customDropDownList: provider.buildingNumberList,
-                      hintText: 'Search Building',
-                      index: 0,
-                      selectedValue: provider.selectedBuilding,
-                      onChanged: (value) {
-                        provider.building(value.toString());
-                      },
-                      searchController: buildingController,
-                    ),
-                    customDropDown(
-                      customDropDownList: provider.serviceProviders,
-                      hintText: 'Search Service Provider',
-                      index: 0,
-                      selectedValue: provider.selectedService,
-                      onChanged: (value) {
-                        provider.serviceProvider(value.toString());
-                      },
-                      searchController: serviceProviderController,
-                    ),
-                  ],
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.30,
-                        height: MediaQuery.of(context).size.height * 0.08,
-                        child: Row(
-                          children: [
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: appColor),
-                              onPressed: () {
-                                showSavingDialog(context, 'Fetching...');
-                                Map<String, dynamic> selectedItemsMap = {
-                                  'selectedStatus': provider.selectedStatus,
-                                  'selectedTicket': provider.selectedTicket,
-                                  'selectedWork': provider.selectedWork,
-                                  'selectedBuilding': provider.selectedBuilding,
-                                  'selectedFloor': provider.selectedFloor,
-                                  'selectedRoom': provider.selectedRoom,
-                                  'selectedAsset': provider.selectedAsset,
-                                  'selectedServiceProvider':
-                                      provider.selectedService,
-                                  'selectedStartDate': selectedStartDate,
-                                  'selectedEndDate': selectedEndDate,
-                                };
-
-                                bool atLeastOneAvailable =
-                                    selectedItemsMap.values.any((value) {
-                                  if (value == null) {
-                                    return false; // Check if the value is null
-                                  }
-                                  if (value is String && value.isEmpty) {
-                                    return false; // Check if the value is an empty string
-                                  }
-                                  return true; // Return true if the value is not null and not empty
-                                });
-
-                                if (atLeastOneAvailable) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) {
-                                      return ReportDetails(
-                                        userId: widget.userID,
-                                        ticketList: ticketList,
-                                        ticketData: filterData,
-                                        filterFieldData: selectedItemsMap,
-                                      );
-                                    }),
-                                  ).whenComplete(() {
-                                    provider.resetSelections();
-                                    // print('ticketList $ticketList');
-                                    // print('filterData $filterData');
-                                    // selectedWork = null;
-                                    // selectedServiceProvider = null;
-                                    // selectedStatus = null;
-                                    // selectedAsset = null;
-                                    // selectedUser = null;
-                                    // selectedRoom = null;
-                                    // selectedFloor = null;
-                                    // selectedbuilding = null;
-                                    // selectedTicket = null;
-                                    // selectedStartDate = '';
-                                    // selectedEndDate = '';
-                                    // // ticketList.clear();
-                                    // // filterData.clear();
-                                    // setState(() {});
-                                    Navigator.pop(context);
-                                  });
-                                } else {
-                                  Navigator.pop(context);
-                                  popupAlertmessage('Please select any filter');
-                                }
-                                //});
-                              },
-                              child: const Text('Get Report'),
-                            ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            // ElevatedButton(
-                            //   onPressed: () {
-                            //     Navigator.push(
-                            //             context,
-                            //             MaterialPageRoute(
-                            //                 builder: (context) =>
-                            //                     const Refreshscreen()))
-                            //         .whenComplete(() {
-                            //       selectedWork = null;
-                            //       selectedServiceProvider = null;
-                            //       selectedStatus = null;
-                            //       selectedAsset = null;
-                            //       selectedUser = null;
-                            //       selectedRoom = null;
-                            //       selectedFloor = null;
-                            //       selectedbuilding = null;
-                            //       selectedTicket = null;
-                            //       selectedStartDate = '';
-                            //       selectedEndDate = '';
-                            //       ticketList.clear();
-                            //       filterData.clear();
-                            //       setState(() {});
-                            //     });
-                            //   },
-                            //   child: const Text('Refresh'),
-                            // ),
-                          ],
                         ),
-                      ),
-                    ),
+                      )
+                    ],
                   ),
-                )
-              ],
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 

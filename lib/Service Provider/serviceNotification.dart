@@ -1,17 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_management_system/provider/filter_provider.dart';
-import 'package:ticket_management_system/utils/colors.dart';
-import '../screens/splash_service.dart';
 
-int globalIndex = 0;
+import '../utils/colors.dart';
 
 class NotificationScreen_service extends StatefulWidget {
   String userId;
-
   NotificationScreen_service({super.key, required this.userId});
 
   @override
@@ -19,36 +15,22 @@ class NotificationScreen_service extends StatefulWidget {
       _NotificationScreen_serviceState();
 }
 
+bool _isLoading = true;
+
+late FilterProvider filterProvider;
+List<dynamic> ticketList = [];
+List<dynamic> ticketListData = [];
+
 class _NotificationScreen_serviceState
     extends State<NotificationScreen_service> {
-  List<dynamic> ticketList = [];
-  List<dynamic> ticketListData = [];
-  int notificationNum = 0;
-
-  final String imagePath = 'Images/';
-  List<String> _imageUrls = [];
-  bool _isLoading = true;
-  final SplashService _splashService = SplashService();
-  FilterProvider? filterProvider;
-  String? userId;
-
-  Future<void> fetchImageUrls() async {
-    ListResult result = await FirebaseStorage.instance.ref('Images/').listAll();
-    List<String> urls = await Future.wait(
-      result.items.map((ref) => ref.getDownloadURL()).toList(),
-    );
-    _imageUrls = urls;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    filterProvider = Provider.of<FilterProvider>(context, listen: false);
   }
-
-  // Future<void> initialize() async {
-  //   userId = await _splashService.getUserID();
-  //   setState(() {});
-  // }
 
   @override
   Widget build(BuildContext context) {
-    final filterProvider = Provider.of<FilterProvider>(context);
-
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
@@ -95,10 +77,13 @@ class _NotificationScreen_serviceState
                 String username = notification['userName'];
                 String ticketId = notification['TicketId'];
 
-                filterProvider.addTicketId(ticketId);
+                // Ensure this is only called after the build phase
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  filterProvider.addTicketId(ticketId);
+                });
 
                 String message =
-                    'Ticket has been raised by $username for your immediate attention.'; // Convert Timestamp to DateTime
+                    'Ticket has been raised by $username for your attention.'; // Convert Timestamp to DateTime
                 DateTime notificationTime = timestamp.toDate();
 
                 DateFormat formatter = DateFormat('yyyy-MM-dd – hh:mm a');
@@ -130,86 +115,86 @@ class _NotificationScreen_serviceState
         ));
   }
 
-  Future<void> getNotificationScreen() async {
-    try {
-      ticketList.clear();
-      QuerySnapshot monthQuery =
-          await FirebaseFirestore.instance.collection("raisedTickets").get();
-      List<dynamic> dateList = monthQuery.docs.map((e) => e.id).toList();
-      for (int j = 0; j < dateList.length; j++) {
-        List<dynamic> temp = [];
-        QuerySnapshot ticketQuery = await FirebaseFirestore.instance
-            .collection("raisedTickets")
-            .doc(dateList[j])
-            .collection('tickets')
-            .where('status', isEqualTo: 'Open')
-            .where('isSeen', isEqualTo: true)
-            .get();
-        temp = ticketQuery.docs.map((e) => e.id).toList();
-        // ticketList = ticketList + temp;
+  // Future<void> getNotificationScreen() async {
+  //   try {
+  //     ticketList.clear();
+  //     QuerySnapshot monthQuery =
+  //         await FirebaseFirestore.instance.collection("raisedTickets").get();
+  //     List<dynamic> dateList = monthQuery.docs.map((e) => e.id).toList();
+  //     for (int j = 0; j < dateList.length; j++) {
+  //       List<dynamic> temp = [];
+  //       QuerySnapshot ticketQuery = await FirebaseFirestore.instance
+  //           .collection("raisedTickets")
+  //           .doc(dateList[j])
+  //           .collection('tickets')
+  //           .where('status', isEqualTo: 'Open')
+  //           .where('isSeen', isEqualTo: true)
+  //           .get();
+  //       temp = ticketQuery.docs.map((e) => e.id).toList();
+  //       // ticketList = ticketList + temp;
 
-        if (temp.isNotEmpty) {
-          ticketList.addAll(temp);
-          for (int k = 0; k < temp.length; k++) {
-            DocumentSnapshot ticketDataQuery = await FirebaseFirestore.instance
-                .collection("raisedTickets")
-                .doc(dateList[j])
-                .collection('tickets')
-                .doc(temp[k])
-                .get();
-            if (ticketDataQuery.exists) {
-              Map<String, dynamic> mapData =
-                  ticketDataQuery.data() as Map<String, dynamic>;
+  //       if (temp.isNotEmpty) {
+  //         ticketList.addAll(temp);
+  //         for (int k = 0; k < temp.length; k++) {
+  //           DocumentSnapshot ticketDataQuery = await FirebaseFirestore.instance
+  //               .collection("raisedTickets")
+  //               .doc(dateList[j])
+  //               .collection('tickets')
+  //               .doc(temp[k])
+  //               .get();
+  //           if (ticketDataQuery.exists) {
+  //             Map<String, dynamic> mapData =
+  //                 ticketDataQuery.data() as Map<String, dynamic>;
 
-              // serviceprovider = mapData['serviceProvider'].toString();
-              ticketListData.add(mapData);
-              // print('$mapData abc');
-            }
-          }
-        }
-      }
-    } catch (e) {
-      print("Error Fetching tickets: $e");
-    }
-  }
+  //             // serviceprovider = mapData['serviceProvider'].toString();
+  //             ticketListData.add(mapData);
+  //             // print('$mapData abc');
+  //           }
+  //         }
+  //       }
+  //     }
+  //   } catch (e) {
+  //     print("Error Fetching tickets: $e");
+  //   }
+  // }
 
-  Widget ticketCard(
-      IconData icons, String title, String ticketListData, int index) {
-    return Row(
-      children: [
-        Icon(icons, color: Colors.deepPurple),
-        const SizedBox(width: 20),
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(width: 10),
-        Text(ticketListData ?? "N/A")
-      ],
-    );
-  }
+  // Widget ticketCard(
+  //     IconData icons, String title, String ticketListData, int index) {
+  //   return Row(
+  //     children: [
+  //       Icon(icons, color: Colors.deepPurple),
+  //       const SizedBox(width: 20),
+  //       Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+  //       const SizedBox(width: 10),
+  //       Text(ticketListData ?? "N/A")
+  //     ],
+  //   );
+  // }
 
-  Widget listCard(
-      IconData icons, String title, List<dynamic> ticketData, int index) {
-    return Row(
-      children: [
-        Icon(icons, color: Colors.deepPurple),
-        const SizedBox(width: 20),
-        Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const SizedBox(width: 10),
-        Column(
-          children: List.generate(
-              ticketData.length, (index) => Text(ticketData[index])),
-        )
-        // Text(ticketData ?? "N/A")
-      ],
-    );
-  }
+  // Widget listCard(
+  //     IconData icons, String title, List<dynamic> ticketData, int index) {
+  //   return Row(
+  //     children: [
+  //       Icon(icons, color: Colors.deepPurple),
+  //       const SizedBox(width: 20),
+  //       Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+  //       const SizedBox(width: 10),
+  //       Column(
+  //         children: List.generate(
+  //             ticketData.length, (index) => Text(ticketData[index])),
+  //       )
+  //       // Text(ticketData ?? "N/A")
+  //     ],
+  //   );
+  // }
 
   Widget notificaionCard(String time, String ticketId, String message) {
     return Card(
       elevation: 5.0,
-      margin: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       child: Container(
-          height: 80,
-          padding: EdgeInsets.all(10),
+          height: 100,
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
               color: Colors.white, borderRadius: BorderRadius.circular(10)),
           child: Column(
@@ -225,12 +210,51 @@ class _NotificationScreen_serviceState
                       color: blackColor,
                     ),
                   ),
-                  Text(
-                    ticketId,
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: blackColor,
-                        fontWeight: FontWeight.bold),
+                  Row(
+                    children: [
+                      Text(
+                        ticketId,
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: blackColor,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      IconButton(
+                          onPressed: () async {
+                            final FirebaseFirestore _firestore =
+                                FirebaseFirestore.instance;
+                            DocumentSnapshot userDoc = await FirebaseFirestore
+                                .instance
+                                .collection('notifications')
+                                .doc(widget.userId)
+                                .get();
+
+                            if (userDoc.exists) {
+                              List<dynamic> notifications =
+                                  userDoc.get('notifications') as List<dynamic>;
+
+                              // Step 2: Remove the notification with the matching ticket
+                              notifications.removeWhere((notification) =>
+                                  notification['TicketId'] == ticketId);
+
+                              // Step 3: Update the array back to Firestore
+                              await _firestore
+                                  .collection('notifications')
+                                  .doc(widget.userId)
+                                  .update({'notifications': notifications});
+
+                              print(
+                                  'Notification with ticket ${ticketId} removed successfully');
+                            } else {
+                              print('User document not found');
+                            }
+                          },
+                          icon: const Icon(
+                            Icons.delete_forever,
+                            color: Colors.red,
+                            size: 20,
+                          ))
+                    ],
                   )
                 ],
               ),

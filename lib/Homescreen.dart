@@ -64,7 +64,7 @@ class HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     Provider.of<FilterProvider>(context, listen: false)
-        .updateUserSeen(widget.userID);
+        .getNotificationLength(widget.userID);
     _firebaseMessaging.requestPermission();
     filterProvider = Provider.of<FilterProvider>(context, listen: false);
     notiLength = filterProvider.closeticketLength.toString();
@@ -181,9 +181,6 @@ class HomeScreenState extends State<HomeScreen>
     Provider.of<FilterProvider>(context, listen: false)
         .fetchAllData(widget.userID);
 
-    // Provider.of<FilterProvider>(context, listen: false)
-    //     .updateUserSeen(widget.userID);
-
     var screenSize = MediaQuery.of(context).size;
     return ReponsiveWidget(
       child: Scaffold(
@@ -207,15 +204,12 @@ class HomeScreenState extends State<HomeScreen>
                         userID: widget.userID,
                       ),
                     ),
-                  ).whenComplete(() {
-                    Provider.of<FilterProvider>(context, listen: false)
+                  ).whenComplete(() async {
+                    await Provider.of<FilterProvider>(context, listen: false)
                         .updateUserSeen(widget.userID);
+                    await Provider.of<FilterProvider>(context, listen: false)
+                        .getNotificationLength(widget.userID);
                   });
-                  // .whenComplete(() {
-                  //   getNotification().whenComplete(() {
-                  //     setState(() {});
-                  //   });
-                  // });
                 },
                 icon: const Icon(
                   size: 30,
@@ -253,7 +247,7 @@ class HomeScreenState extends State<HomeScreen>
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => spliScreen(
+                            builder: (context) => splitScreen(
                                   userID: widget.userID,
                                 )));
                   },
@@ -544,6 +538,15 @@ class HomeScreenState extends State<HomeScreen>
                                   ),
                                 ),
                               ),
+                              Center(
+                                child: Text(
+                                  'T.M.S v1.1',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: appColor),
+                                ),
+                              )
                             ],
                           ),
                         ),

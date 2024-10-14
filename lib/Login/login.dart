@@ -254,7 +254,7 @@ class _LoginPageState extends State<LoginPage> {
                       //  HomeScreen(
                       //       userID: userIDController.text,
                       //     )
-                      spliScreen(
+                      splitScreen(
                         userID: userID,
                       )),
               (route) => false).then((value) {
@@ -270,6 +270,7 @@ class _LoginPageState extends State<LoginPage> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {
+        Navigator.pop(context);
         SnackBar snackBar = const SnackBar(
             backgroundColor: Colors.red,
             content: Center(

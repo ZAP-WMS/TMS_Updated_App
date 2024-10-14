@@ -170,6 +170,9 @@ class _RaiseState extends State<Raise> {
                                           provider.setSelectedWork(
                                               value.toString());
 
+                                          // provider.getAsset(
+                                          //     _selectedWork.toString());
+
                                           filterProvider.fetchFcmID(
                                               provider.selectedWork.toString());
                                         },
@@ -266,7 +269,10 @@ class _RaiseState extends State<Raise> {
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 10.0),
                                       child: DropdownButtonFormField(
-                                        value: provider.selectedRoom,
+                                        value: provider.roomOption
+                                                .contains(provider.selectedRoom)
+                                            ? provider.selectedRoom
+                                            : null,
                                         items: provider.roomOption
                                             .map((String option) {
                                           return DropdownMenuItem<String>(
@@ -279,6 +285,8 @@ class _RaiseState extends State<Raise> {
                                           _selectedRoom = value;
                                           provider.setSelectedRoom(
                                               _selectedRoom.toString());
+                                              provider.getAsset(
+                                              _selectedWork.toString(),_selectedRoom.toString());
                                           // setState(() {
                                           //   _selectedRoom = value;
                                           //   getAsset();
@@ -303,7 +311,10 @@ class _RaiseState extends State<Raise> {
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 10.0),
                                       child: DropdownButtonFormField(
-                                        value: provider.selectedAsset,
+                                        value: provider.assetOption.contains(
+                                                provider.selectedAsset)
+                                            ? provider.selectedAsset
+                                            : null,
                                         items: provider.assetOption
                                             .map((String option) {
                                           return DropdownMenuItem<String>(
@@ -343,7 +354,7 @@ class _RaiseState extends State<Raise> {
                                               0.2,
                                       padding: const EdgeInsets.only(top: 8.0),
                                       child: TextField(
-                                        maxLength: 60,
+                                        maxLength: 37,
                                         controller: remarkController,
                                         maxLines: null,
                                         decoration: InputDecoration(
@@ -772,15 +783,50 @@ class _RaiseState extends State<Raise> {
       "tickets": ticketID,
       "isSeen": true,
       "name": userName
-    }).whenComplete(() {
-      addNotification(
-          widget.userID,
-          filterProvider.serviceProviderId.toString(),
-          userName,
-          filterProvider.serviceProviderName.toString(),
-          ticketID,
-          DateTime.now().toString());
-      print("Data Stored Successfully");
+    }).whenComplete(() async {
+      await FirebaseFirestore.instance
+          .collection("UserNotification")
+          // .doc(currentYear.toString())
+          // .collection('months')
+          // .doc(currentMonth.toString())
+          // .collection('date')
+          .doc(date)
+          .collection('tickets')
+          .doc(ticketID)
+          .set({
+        " month": currentMonth,
+        "year": currentYear,
+        "work": _selectedWork,
+        "building": _selectedBuilding,
+        "floor": _selectedFloor,
+        "room": _selectedRoom,
+        "asset": _selectedAsset,
+        "remark": remarkController.text,
+        "serviceProvider": serviceProviders,
+        "serviceProviderId": serviceProvidersId,
+        "imageFilePaths": images,
+        "date": date,
+        "user": widget.userID,
+        'status': 'Open',
+        "tickets": ticketID,
+        "isSeen": true,
+        "name": userName
+      });
+    });
+    await addNotification(
+        widget.userID,
+        filterProvider.serviceProviderId.toString(),
+        userName,
+        filterProvider.serviceProviderName.toString(),
+        ticketID,
+        DateTime.now().toString());
+    print("Data Stored Successfully");
+
+    await FirebaseFirestore.instance
+        .collection("UserNotification")
+        .doc(date)
+        .set({
+      "raisedTickets": date,
     });
     await FirebaseFirestore.instance.collection("raisedTickets").doc(date).set({
       "raisedTickets": date,
@@ -980,7 +1026,7 @@ class _RaiseState extends State<Raise> {
 
     // Reference to the Firestore document
     DocumentReference userDoc =
-        firestore.collection('notifications').doc(userId);
+        firestore.collection('notifications').doc(serviceId);
 
     // Add the new notification to the array
     try {

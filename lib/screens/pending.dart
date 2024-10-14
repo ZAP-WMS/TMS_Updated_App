@@ -343,7 +343,7 @@ class _pendingState extends State<pending> {
 
         if (temp.isNotEmpty) {
           ticketList.addAll(temp);
-          ticketList = ticketList.reversed.toList();
+          // ticketList = ticketList.reversed.toList();
           for (int k = 0; k < temp.length; k++) {
             DocumentSnapshot ticketDataQuery = await FirebaseFirestore.instance
                 .collection("raisedTickets")
@@ -363,6 +363,14 @@ class _pendingState extends State<pending> {
               // serviceprovider = mapData['serviceProvider'].toString();
               ticketListData.add(mapData);
 
+              // Sort the list by date in descending order
+              ticketListData.sort((a, b) {
+                DateTime dateA =
+                    parseDate(a['date']); // Parse date from mapData
+                DateTime dateB = parseDate(b['date']);
+                return dateA.compareTo(dateB); // Descending order
+              });
+
               // print('$mapData abc');
             }
           }
@@ -372,6 +380,15 @@ class _pendingState extends State<pending> {
     } catch (e) {
       print("Error Fetching tickets: $e");
     }
+  }
+
+  // Function to parse the custom "DD-MM-YYYY" date format
+  DateTime parseDate(String dateString) {
+    List<String> parts = dateString.split('-'); // Split date string by '-'
+    int day = int.parse(parts[0]);
+    int month = int.parse(parts[1]);
+    int year = int.parse(parts[2]);
+    return DateTime(year, month, day); // Return DateTime object
   }
 
   Widget ticketCard(
@@ -407,7 +424,7 @@ class _pendingState extends State<pending> {
 
   Widget customCard(IconData icons, String title, String message) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -415,8 +432,8 @@ class _pendingState extends State<pending> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icons, color: Color.fromARGB(255, 197, 66, 73)),
-              SizedBox(width: 10),
+              Icon(icons, color: const Color.fromARGB(255, 197, 66, 73)),
+              const SizedBox(width: 10),
               Text(
                 title,
                 style:
@@ -430,9 +447,7 @@ class _pendingState extends State<pending> {
               width: 100,
               child: Text(
                 message,
-                style: TextStyle(
-                  fontSize: 15,
-                ),
+                style: const TextStyle(fontSize: 15),
               ),
             ),
           ),

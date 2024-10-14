@@ -46,8 +46,8 @@ class FilterProvider with ChangeNotifier {
     notifyListeners(); // Notify listeners of the change
   }
 
-  Future<void> fetchAndFilterData(
-      String userId, Map<String, dynamic> _selectedData) async {
+  Future<void> fetchAndFilterData(List<String> userRole, String userId,
+      Map<String, dynamic> _selectedData) async {
     _isLoading = true;
     _filteredData.clear();
     try {
@@ -60,12 +60,22 @@ class FilterProvider with ChangeNotifier {
       List<Map<String, dynamic>> allTicketData = [];
       for (DocumentSnapshot raisedTicket in raisedTickets) {
         // Fetch tickets for each raised ticket
-        QuerySnapshot ticketsSnapshot = await _firestore
-            .collection('raisedTickets')
-            .doc(raisedTicket.id)
-            .collection('tickets')
-            .where('user', isEqualTo: userId)
-            .get();
+        QuerySnapshot ticketsSnapshot;
+        if (userRole.isEmpty) {
+          ticketsSnapshot = await _firestore
+              .collection('raisedTickets')
+              .doc(raisedTicket.id)
+              .collection('tickets')
+              .where('user', isEqualTo: userId)
+              .get();
+        } else {
+          ticketsSnapshot = await _firestore
+              .collection('raisedTickets')
+              .doc(raisedTicket.id)
+              .collection('tickets')
+              .where('serviceProviderId', isEqualTo: userId)
+              .get();
+        }
 
         for (DocumentSnapshot ticket in ticketsSnapshot.docs) {
           // Fetch each ticket document
@@ -168,13 +178,137 @@ class FilterProvider with ChangeNotifier {
     }
   }
 
+  // Future<void> fetchAndFilterServiceProviderData(
+  //   List<String> userRole,
+  //     String userId, Map<String, dynamic> _selectedData) async {
+  //   _isLoading = true;
+  //   _filteredData.clear();
+  //   try {
+  //     // Fetch data from the first collection
+  //     QuerySnapshot raisedTicketsSnapshot =
+  //         await _firestore.collection('raisedTickets').get();
+  //     List<DocumentSnapshot> raisedTickets = raisedTicketsSnapshot.docs;
+
+  //     // Initialize a list to store all ticket documents
+  //     List<Map<String, dynamic>> allTicketData = [];
+  //     for (DocumentSnapshot raisedTicket in raisedTickets) {
+  //       // Fetch tickets for each raised ticket
+
+  //       QuerySnapshot ticketsSnapshot = await _firestore
+  //           .collection('raisedTickets')
+  //           .doc(raisedTicket.id)
+  //           .collection('tickets')
+  //           .where('serviceProviderId', isEqualTo: userId)
+  //           .get();
+
+  //       for (DocumentSnapshot ticket in ticketsSnapshot.docs) {
+  //         // Fetch each ticket document
+  //         DocumentSnapshot ticketData = await _firestore
+  //             .collection('raisedTickets')
+  //             .doc(raisedTicket.id)
+  //             .collection('tickets')
+  //             .doc(ticket.id)
+  //             .get();
+
+  //         if (ticketData.exists) {
+  //           Map<String, dynamic>? ticketDataMap =
+  //               ticketData.data() as Map<String, dynamic>?;
+
+  //           if (ticketDataMap != null) {
+  //             allTicketData.add(ticketDataMap);
+  //           }
+  //         }
+  //       }
+  //     }
+
+  //     // Apply filter on the collected ticket data
+
+  //     List<Map<String, dynamic>> filteredData = allTicketData.where((data) {
+  //       bool matches = true;
+
+  //       if (_selectedData['selectedStatus'] != null &&
+  //           data['status'] != _selectedData['selectedStatus']) {
+  //         matches = false;
+  //       }
+
+  //       if (_selectedData['selectedStartDate'] != '' &&
+  //           _selectedData['selectedStartDate'] != null) {
+  //         DateFormat dateFormat = DateFormat("dd-MM-yyyy");
+
+  //         // Parse the date string into a DateTime object
+  //         DateTime startDate =
+  //             dateFormat.parse(_selectedData['selectedStartDate']);
+  //         DateTime ticketDate = dateFormat.parse(data['date']);
+
+  //         if (ticketDate.isBefore(startDate)) {
+  //           matches = false;
+  //         }
+  //       }
+
+  //       if (_selectedData['selectedEndDate'] != '' &&
+  //           _selectedData['selectedEndDate'] != null) {
+  //         DateFormat dateFormat = DateFormat("dd-MM-yyyy");
+  //         DateTime endDate = dateFormat.parse(_selectedData['selectedEndDate']);
+  //         DateTime ticketDate = dateFormat.parse(data['date']);
+  //         if (ticketDate.isAfter(endDate)) {
+  //           matches = false;
+  //         }
+  //       }
+
+  //       if (_selectedData['selectedTicket'] != null &&
+  //           data['tickets'] != _selectedData['selectedTicket']) {
+  //         matches = false;
+  //       }
+
+  //       if (_selectedData['selectedWork'] != null &&
+  //           data['work'] != _selectedData['selectedWork']) {
+  //         matches = false;
+  //       }
+
+  //       if (_selectedData['selectedBuilding'] != null &&
+  //           data['building'] != _selectedData['selectedBuilding']) {
+  //         matches = false;
+  //       }
+  //       if (_selectedData['selectedFloor'] != null &&
+  //           data['floor'] != _selectedData['selectedFloor']) {
+  //         matches = false;
+  //       }
+
+  //       if (_selectedData['selectedRoom'] != null &&
+  //           data['room'] != _selectedData['selectedRoom']) {
+  //         matches = false;
+  //       }
+
+  //       if (_selectedData['selectedAsset'] != null &&
+  //           data['asset'] != _selectedData['selectedAsset']) {
+  //         matches = false;
+  //       }
+
+  //       if (_selectedData['selectedServiceProvider'] != null &&
+  //           data['serviceProvider'] !=
+  //               _selectedData['selectedServiceProvider']) {
+  //         matches = false;
+  //       }
+
+  //       return matches;
+  //     }).toList();
+  //     print('dfdf$filteredData');
+
+  //     _filteredData = filteredData;
+  //     _isLoading = false;
+  //     notifyListeners();
+  //   } catch (e) {
+  //     print('Error fetching data: $e');
+  //   }
+  // }
+
   fetchAllData(String userId) async {
     _isopenLoading = true;
     _filteredData.clear();
     try {
       // Fetch data from the first collection
       QuerySnapshot raisedTicketsSnapshot =
-          await _firestore.collection('raisedTickets').get();
+          await _firestore.collection('UserNotification').get();
       List<DocumentSnapshot> raisedTickets = raisedTicketsSnapshot.docs;
 
       // Initialize a list to store all ticket documents
@@ -183,7 +317,7 @@ class FilterProvider with ChangeNotifier {
       for (DocumentSnapshot raisedTicket in raisedTickets) {
         // Fetch tickets for each raised ticket
         QuerySnapshot ticketsSnapshot = await _firestore
-            .collection('raisedTickets')
+            .collection('UserNotification')
             .doc(raisedTicket.id)
             .collection('tickets')
             .where('user', isEqualTo: userId)
@@ -192,7 +326,7 @@ class FilterProvider with ChangeNotifier {
         for (DocumentSnapshot ticket in ticketsSnapshot.docs) {
           // Fetch each ticket document
           DocumentSnapshot ticketData = await _firestore
-              .collection('raisedTickets')
+              .collection('UserNotification')
               .doc(raisedTicket.id)
               .collection('tickets')
               .doc(ticket.id)
@@ -271,9 +405,8 @@ class FilterProvider with ChangeNotifier {
           if (data != null) {
             tokenId = data['fcmToken'];
           }
+          _tokenData = tokenId!;
         }
-
-        _tokenData = tokenId!;
         _serviceProviderName = name;
         _serviceProviderId = userId;
         notifyListeners();
@@ -366,50 +499,98 @@ class FilterProvider with ChangeNotifier {
   }
 
   Future updateUserSeen(String userId) async {
-    _isUserSeen.clear();
-    QuerySnapshot raisedTicketsSnapshot =
-        await _firestore.collection('raisedTickets').get();
-    List<DocumentSnapshot> raisedTickets = raisedTicketsSnapshot.docs;
+    try {
+      QuerySnapshot raisedTicketsSnapshot =
+          await _firestore.collection('raisedTickets').get();
+      List<DocumentSnapshot> raisedTickets = raisedTicketsSnapshot.docs;
 
-    // Initialize a list to store all ticket documents
-    List<Map<String, dynamic>> allRaisedTicketData = [];
+      // Initialize a list to store all ticket documents
+      List<Map<String, dynamic>> allRaisedTicketData = [];
 
-    for (DocumentSnapshot raisedTicket in raisedTickets) {
-      // Fetch tickets for each raised ticket
-      QuerySnapshot ticketsSnapshot = await _firestore
-          .collection('raisedTickets')
-          .doc(raisedTicket.id)
-          .collection('tickets')
-          .where('user', isEqualTo: userId)
-          .get();
-
-      for (DocumentSnapshot ticket in ticketsSnapshot.docs) {
-        // Fetch each ticket document
-        DocumentSnapshot ticketData = await _firestore
+      for (DocumentSnapshot raisedTicket in raisedTickets) {
+        // Fetch tickets for each raised ticket
+        QuerySnapshot ticketsSnapshot = await _firestore
             .collection('raisedTickets')
             .doc(raisedTicket.id)
             .collection('tickets')
-            .doc(ticket.id)
+            .where('user', isEqualTo: userId)
             .get();
 
-        Map<String, dynamic>? data = ticketData.data() as Map<String, dynamic>?;
-
-        // Check if the field exists
-        if (data != null && data.containsKey('isUserSeen')) {
-          await _firestore
+        for (DocumentSnapshot ticket in ticketsSnapshot.docs) {
+          // Fetch each ticket document
+          DocumentSnapshot ticketData = await _firestore
               .collection('raisedTickets')
               .doc(raisedTicket.id)
               .collection('tickets')
               .doc(ticket.id)
-              .update({
-            'isUserSeen': false,
-          });
-        }
-        if (data!['isUserSeen'] == true) {
-          _isUserSeen.add(data);
-          notifyListeners();
+              .get();
+
+          Map<String, dynamic>? data =
+              ticketData.data() as Map<String, dynamic>?;
+
+          // Check if the field exists
+
+          if (data != null && data.containsKey('isUserSeen')) {
+            await _firestore
+                .collection('raisedTickets')
+                .doc(raisedTicket.id)
+                .collection('tickets')
+                .doc(ticket.id)
+                .update({
+              'isUserSeen': false,
+            });
+          }
         }
       }
+    } catch (e) {
+      print('Error updating user seen: $e');
+    }
+  }
+
+  Future getNotificationLength(String userId) async {
+    _isUserSeen.clear();
+
+    try {
+      QuerySnapshot raisedTicketsSnapshot =
+          await _firestore.collection('raisedTickets').get();
+      List<DocumentSnapshot> raisedTickets = raisedTicketsSnapshot.docs;
+
+      // Initialize a list to store all ticket documents
+      List<Map<String, dynamic>> allRaisedTicketData = [];
+
+      for (DocumentSnapshot raisedTicket in raisedTickets) {
+        // Fetch tickets for each raised ticket
+        QuerySnapshot ticketsSnapshot = await _firestore
+            .collection('raisedTickets')
+            .doc(raisedTicket.id)
+            .collection('tickets')
+            .where('user', isEqualTo: userId)
+            .get();
+
+        for (DocumentSnapshot ticket in ticketsSnapshot.docs) {
+          // Fetch each ticket document
+          DocumentSnapshot ticketData = await _firestore
+              .collection('raisedTickets')
+              .doc(raisedTicket.id)
+              .collection('tickets')
+              .doc(ticket.id)
+              .get();
+
+          Map<String, dynamic>? data =
+              ticketData.data() as Map<String, dynamic>?;
+
+          // Check if the field exists
+
+          if (data!['isUserSeen'] == true) {
+            _isUserSeen.add(data);
+            notifyListeners();
+          }
+        }
+      }
+      // Notify listeners after the loop is done
+      notifyListeners();
+    } catch (e) {
+      print('Error updating user seen: $e');
     }
   }
 
@@ -427,11 +608,11 @@ class FilterProvider with ChangeNotifier {
         if (notifications[i]['isServiceProviderSeen'] == true) {
           _isServiceProviderSeen.add(notifications[i]);
           notifyListeners();
+        } else {
+          _isServiceProviderSeen.clear();
+          notifyListeners();
         }
       }
-    } else {
-      _isServiceProviderSeen.clear();
-      notifyListeners();
     }
   }
 
@@ -451,7 +632,6 @@ class FilterProvider with ChangeNotifier {
       // Cast the dynamic list to a list of maps
       List<Map<String, dynamic>> notificationList =
           notifications.cast<Map<String, dynamic>>();
-      print(notificationList);
 
       // Update the specific notification
       List<Map<String, dynamic>> updatedNotifications =

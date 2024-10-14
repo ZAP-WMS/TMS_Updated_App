@@ -30,6 +30,7 @@ class SpalashScreenState extends State<SpalashScreen>
     Timer(Duration(seconds: 3), () async {
       isLogin = await _splashService.checkLoginStatus(context);
       userId = await _splashService.getUserID();
+       _splashService.getUserName(userId);
       if (isLogin) {
         // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
@@ -107,7 +108,7 @@ class SpalashScreenState extends State<SpalashScreen>
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8.0), // Padding between lines
+                SizedBox(height: 8.0), // Padding between lines
                 Text(
                   'Management',
                   textAlign: TextAlign.center,

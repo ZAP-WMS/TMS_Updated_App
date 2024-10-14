@@ -130,7 +130,7 @@ class HomeserviceState extends State<Homeservice>
           ]),
           actions: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(5.0),
               child: Container(
                 color: const Color.fromARGB(255, 197, 66, 73),
                 height: MediaQuery.of(context).size.height * 0.2,
@@ -141,7 +141,7 @@ class HomeserviceState extends State<Homeservice>
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                spliScreen(userID: widget.userID)));
+                                splitScreen(userID: widget.userID)));
                   },
                   child: const Center(
                     child: Text(
@@ -194,7 +194,7 @@ class HomeserviceState extends State<Homeservice>
                                   Card(
                                     elevation: 10,
                                     child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.all(5.0),
                                       child: GestureDetector(
                                         onTap: () {
                                           Navigator.push(
