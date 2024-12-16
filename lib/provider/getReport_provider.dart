@@ -117,7 +117,7 @@ class ReportProvider extends ChangeNotifier {
     // notifyListeners();
   }
 
-  Future<void> fetchTicketNumbers() async {
+  Future<void> fetchTicketNumbers(String userId) async {
     List<String> dates = [];
     List<String> tickets = [];
     QuerySnapshot querySnapshot =
@@ -131,6 +131,7 @@ class ReportProvider extends ChangeNotifier {
           .collection('raisedTickets')
           .doc(date)
           .collection('tickets')
+          .where('user', isEqualTo: userId)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
         // Access the document's data as a Map
@@ -139,7 +140,22 @@ class ReportProvider extends ChangeNotifier {
     }
 
     _ticketNumberList = tickets.toList();
+    _ticketNumberList = tickets.reversed.toList();
+
+    _ticketNumberList.sort((a, b) {
+      DateTime dateA = parseDate(a);
+      DateTime dateB = parseDate(b);
+      return dateB.compareTo(dateA);
+    });
+
     notifyListeners();
+  }
+
+  DateTime parseDate(String ticketId) {
+    int year = int.parse(ticketId.substring(0, 4));
+    int month = int.parse(ticketId.substring(4, 6));
+    int day = int.parse(ticketId.substring(0, 4));
+    return DateTime(year, month, day);
   }
 
   Future<void> fetchRoomNumbers() async {

@@ -170,7 +170,7 @@ class FilterProvider with ChangeNotifier {
       }).toList();
       print('dfdf$filteredData');
 
-      _filteredData = filteredData;
+      _filteredData = filteredData.reversed.toList();
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -487,7 +487,8 @@ class FilterProvider with ChangeNotifier {
           return matches;
         }).toList();
         print(data.length);
-        _servicependingData = data;
+        _servicependingData = data.reversed.toList();
+        // _servicependingData = servicependingData.reversed.toList();
         _isserviceLoading = false;
         notifyListeners();
       } catch (e) {

@@ -60,6 +60,12 @@ class RaiseDataProvider extends ChangeNotifier {
     _selectedRoom = null;
     _selectedWork = null;
     _selectedAsset = null;
+    assetOption.clear();
+    notifyListeners();
+  }
+
+  void resetSpecificSelection() {
+    _selectedRoom = null;
     notifyListeners();
   }
 
@@ -81,7 +87,6 @@ class RaiseDataProvider extends ChangeNotifier {
 
   Future<void> getFloor() async {
     if (_selectedBuilding == null) return;
-
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('buildingNumbers')
         .doc(_selectedBuilding)
@@ -95,7 +100,6 @@ class RaiseDataProvider extends ChangeNotifier {
 
   Future<void> getRoom() async {
     if (_selectedBuilding == null || _selectedFloor == null) return;
-
     QuerySnapshot querySnapshot = await FirebaseFirestore.instance
         .collection('buildingNumbers')
         .doc(_selectedBuilding)
@@ -113,16 +117,16 @@ class RaiseDataProvider extends ChangeNotifier {
     if (selected.isNotEmpty) {
       selectedAsset == null;
       assetOptions.clear();
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          // .collection('buildingNumbers')
-          // .doc(_selectedBuilding)
-          // .collection('floorNumbers')
-          // .doc(_selectedFloor)
-          // .collection('roomNumbers')
-          // .doc(_selectedRoom)
-          .collection('assets')
-          .where('workListByAsset', isEqualTo: selected)
-          .get();
+      // QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      //     // .collection('buildingNumbers')
+      //     // .doc(_selectedBuilding)
+      //     // .collection('floorNumbers')
+      //     // .doc(_selectedFloor)  k
+      //     // .collection('roomNumbers')
+      //     // .doc(_selectedRoom)
+      //     .collection('assets')
+      //     .where('workListByAsset', isEqualTo: selected)
+      //     .get();
       QuerySnapshot querySnapshot2 = await FirebaseFirestore.instance
           .collection('buildingNumbers')
           .doc(_selectedBuilding)
@@ -131,9 +135,12 @@ class RaiseDataProvider extends ChangeNotifier {
           .collection('roomNumbers')
           .doc(selectedRoom)
           .collection('assets')
+          .where('workListByAsset', isEqualTo: selected)
           .get();
-      if ((querySnapshot.docs.isNotEmpty) && (querySnapshot2.docs.isNotEmpty)) {
-        assetOptions = querySnapshot.docs.map((e) => e.id).toList();
+      if (querySnapshot2.docs.isNotEmpty)
+      // && (querySnapshot2.docs.isNotEmpty))
+      {
+        assetOptions = querySnapshot2.docs.map((e) => e.id).toList();
         notifyListeners();
       }
     }

@@ -30,7 +30,7 @@ class SpalashScreenState extends State<SpalashScreen>
     Timer(Duration(seconds: 3), () async {
       isLogin = await _splashService.checkLoginStatus(context);
       userId = await _splashService.getUserID();
-       _splashService.getUserName(userId);
+      _splashService.getUserName(userId);
       if (isLogin) {
         // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
@@ -103,22 +103,20 @@ class SpalashScreenState extends State<SpalashScreen>
                   'Ticket',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Color.fromARGB(223, 97, 4, 4),
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      color: Color.fromARGB(223, 97, 4, 4),
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8.0), // Padding between lines
                 Text(
                   'Management',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: Color.fromARGB(223, 97, 4, 4),
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      color: Color.fromARGB(223, 97, 4, 4),
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8.0), // Padding between lines
+                SizedBox(height: 8.0), // Padding between lines
                 Text(
                   'System',
                   textAlign: TextAlign.center,

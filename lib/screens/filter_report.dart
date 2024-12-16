@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_management_system/provider/getReport_provider.dart';
-import 'package:ticket_management_system/provider/raisedata_provider.dart';
 import 'package:ticket_management_system/screens/display_report.dart';
 import 'package:ticket_management_system/screens/splash_service.dart';
 import 'package:ticket_management_system/utils/colors.dart';
@@ -103,7 +102,7 @@ class _FilteredReportState extends State<FilteredReport> {
   Future initialize() async {
     dataProvider.resetSelections();
     await dataProvider.fetchFloorNumbers();
-    await dataProvider.fetchTicketNumbers();
+    await dataProvider.fetchTicketNumbers(widget.userID);
     await dataProvider.fetchBuildingNumbers();
     await dataProvider.fetchRoomNumbers();
     await dataProvider.fetchWorkList();
@@ -358,12 +357,12 @@ class _FilteredReportState extends State<FilteredReport> {
                                           context,
                                           MaterialPageRoute(builder: (context) {
                                             return ReportDetails(
-                                              userId: widget.userID,
-                                              ticketList: ticketList,
-                                              ticketData: filterData,
-                                              filterFieldData: selectedItemsMap,
-                                              userRole:userRole!
-                                            );
+                                                userId: widget.userID,
+                                                ticketList: ticketList,
+                                                ticketData: filterData,
+                                                filterFieldData:
+                                                    selectedItemsMap,
+                                                userRole: userRole!);
                                           }),
                                         ).whenComplete(() {
                                           provider.resetSelections();
@@ -532,8 +531,14 @@ class _FilteredReportState extends State<FilteredReport> {
             .collection('tickets')
             .get();
         temp = ticketQuery.docs.map((e) => e.id).toList();
+        temp = temp.reversed.toList();
         ticketList = ticketList + temp;
       }
+      ticketList.sort((a, b) {
+        DateTime dateA = parseDate(a);
+        DateTime dateB = parseDate(b);
+        return dateB.compareTo(dateA);
+      });
     } catch (e) {
       print(e);
     }
@@ -891,5 +896,12 @@ class _FilteredReportState extends State<FilteredReport> {
     } catch (e) {
       print("Error Fetching tickets: $e");
     }
+  }
+
+  DateTime parseDate(String ticketId) {
+    int year = int.parse(ticketId.substring(0, 4));
+    int month = int.parse(ticketId.substring(4, 6));
+    int day = int.parse(ticketId.substring(0, 4));
+    return DateTime(year, month, day);
   }
 }
