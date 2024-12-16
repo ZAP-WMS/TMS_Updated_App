@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_management_system/screens/notification_ticket.dart';
 import 'package:ticket_management_system/screens/splash_service.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 import '../provider/filter_provider.dart';
 import '../utils/colors.dart';
 
@@ -76,11 +77,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: const Color.fromARGB(255, 141, 36, 41),
-          title: const Text('Notifications'),
+          title: const Text(
+            'Notifications',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: LoadingPage())
             : Consumer<FilterProvider>(
                 builder: (context, value, child) {
                   return ListView.builder(

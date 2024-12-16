@@ -17,6 +17,7 @@ import 'package:ticket_management_system/screens/raise.dart';
 import 'package:ticket_management_system/screens/splash_service.dart';
 import 'package:ticket_management_system/screens/split_Screen.dart';
 import 'package:ticket_management_system/utils/colors.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key, required this.userID});
@@ -186,6 +187,8 @@ class HomeScreenState extends State<HomeScreen>
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          elevation: 5,
+          automaticallyImplyLeading: false,
           centerTitle: true,
           backgroundColor: Colors.white,
           title: const Text(
@@ -288,10 +291,7 @@ class HomeScreenState extends State<HomeScreen>
             final openTicketlength = value.openData.length;
 
             return value.openLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: appColor,
-                  ))
+                ? const Center(child: LoadingPage())
                 : LayoutBuilder(
                     builder: (context, constraints) {
                       bool isLandscape =
@@ -540,7 +540,7 @@ class HomeScreenState extends State<HomeScreen>
                               ),
                               Center(
                                 child: Text(
-                                  'T.M.S v1.5',
+                                  'T.M.S v1.5.1',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,

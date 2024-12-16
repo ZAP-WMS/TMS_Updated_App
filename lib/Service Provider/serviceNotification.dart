@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_management_system/provider/filter_provider.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 import '../utils/colors.dart';
 
@@ -34,8 +35,10 @@ class _NotificationScreen_serviceState
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: appColor,
-          title: const Text('Notification'),
+          title:
+              const Text('Notification', style: TextStyle(color: Colors.white)),
         ),
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
@@ -44,7 +47,7 @@ class _NotificationScreen_serviceState
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: LoadingPage());
             }
 
             if (snapshot.hasError) {

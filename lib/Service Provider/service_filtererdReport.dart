@@ -128,7 +128,7 @@
 //         // ],
 //       ),
 //       body: isLoading
-//           ? const Center(child: CircularProgressIndicator())
+//           ? const Center(child: LoadingPage())
 //           : Container(
 //               margin: EdgeInsets.only(top: 20),
 //               width: MediaQuery.of(context).size.width,

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:ticket_management_system/Login/login.dart';
 
@@ -113,7 +112,7 @@ class _SignupPageState extends State<SignupPage> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        Center(
+                        const Center(
                             child: Text(
                           'SIGN UP',
                           style: TextStyle(

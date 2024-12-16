@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ticket_management_system/Service%20Provider/reports_ticket_page.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 class ServiceReportScreen extends StatefulWidget {
   const ServiceReportScreen({super.key});
@@ -30,15 +31,14 @@ class _ServiceReportScreenState extends State<ServiceReportScreen> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
-          title: const Text(
-            "Reports",
-          ),
+          automaticallyImplyLeading: false,
+          title: const Text("Reports", style: TextStyle(color: Colors.white)),
           centerTitle: true,
           backgroundColor: Colors.deepPurple,
         ),
         body: isLoading
             ? const Center(
-                child: CircularProgressIndicator(),
+                child: LoadingPage(),
               )
             : Container(
                 margin: const EdgeInsets.only(left: 10.0, right: 10.0),

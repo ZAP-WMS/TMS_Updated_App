@@ -7,6 +7,7 @@ import 'package:ticket_management_system/Service%20Provider/serviceNotification.
 import 'package:ticket_management_system/screens/filter_report.dart';
 import 'package:ticket_management_system/screens/profile.dart';
 import 'package:ticket_management_system/screens/split_Screen.dart';
+
 import '../provider/filter_provider.dart';
 
 class Homeservice extends StatefulWidget {
@@ -78,6 +79,7 @@ class HomeserviceState extends State<Homeservice>
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           centerTitle: true,
           backgroundColor: Colors.white,
           title: const Text(

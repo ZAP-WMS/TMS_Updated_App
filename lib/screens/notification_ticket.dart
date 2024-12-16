@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_management_system/screens/splash_service.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 import '../provider/filter_provider.dart';
 
@@ -78,11 +79,15 @@ class _NotificationTicketState extends State<NotificationTicket> {
     ];
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Color.fromARGB(255, 141, 36, 41),
-          title: const Text('Tickets Details'),
+          title: const Text(
+            'Tickets Details',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: LoadingPage())
             : ticketListData.isNotEmpty
                 ? ListView.builder(
                     itemCount: ticketListData.length,

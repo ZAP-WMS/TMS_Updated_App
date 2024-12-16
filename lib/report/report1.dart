@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ticket_management_system/Service%20Provider/reports_ticket_page.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 class report1 extends StatefulWidget {
   const report1({super.key});
@@ -36,15 +37,17 @@ class _report1State extends State<report1> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text(
             "Reports",
+            style: TextStyle(color: Colors.white),
           ),
           centerTitle: true,
           backgroundColor: Colors.deepPurple,
         ),
         body: isLoading
             ? const Center(
-                child: CircularProgressIndicator(),
+                child: LoadingPage(),
               )
             : SingleChildScrollView(
                 child: Column(

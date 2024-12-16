@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class ReportTicketScreen extends StatefulWidget {
@@ -32,7 +31,8 @@ class _ReportTicketScreenState extends State<ReportTicketScreen> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.ticketNo),
+        automaticallyImplyLeading: false,
+        title: Text(widget.ticketNo, style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurple,
       ),
       body: Padding(

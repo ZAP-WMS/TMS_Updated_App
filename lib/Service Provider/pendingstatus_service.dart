@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_management_system/utils/colors.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 import '../provider/filter_provider.dart';
 import '../screens/splash_service.dart';
@@ -144,16 +144,14 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Tickets'),
+          automaticallyImplyLeading: false,
+          title: const Text('Tickets', style: TextStyle(color: Colors.white)),
           centerTitle: true,
           backgroundColor: const Color.fromARGB(255, 197, 66, 73)),
       body: Consumer<FilterProvider>(
         builder: (context, value, child) {
           return value.serviceLoading
-              ? Center(
-                  child: CircularProgressIndicator(
-                  color: appColor,
-                ))
+              ? Center(child: LoadingPage())
               : value.servicependingData.isNotEmpty
                   ? ListView.builder(
                       itemCount: value.servicependingData.length,
@@ -243,16 +241,15 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
     Navigator.pop(context);
     showCupertinoDialog(
       context: context,
-      builder: (context) => CupertinoAlertDialog(
+      builder: (context) => const CupertinoAlertDialog(
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: const [
+          children: [
             SizedBox(
               height: 50,
               width: 50,
               child: Center(
-                child: CircularProgressIndicator(
-                    color: Color.fromARGB(255, 151, 64, 69)),
+                child: LoadingPage(),
               ),
             ),
             Text(

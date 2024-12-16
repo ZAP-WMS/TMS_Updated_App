@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:ticket_management_system/screens/display_report.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 class FilteredReport extends StatefulWidget {
   const FilteredReport({super.key});
@@ -63,12 +62,13 @@ class _FilteredReportState extends State<FilteredReport> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('All Tickets Report'),
         backgroundColor: Colors.deepPurple,
       ),
       body: isLoading
           ? const Center(
-              child: CircularProgressIndicator(),
+              child: LoadingPage(),
             )
           : Padding(
               padding: const EdgeInsets.all(16.0),

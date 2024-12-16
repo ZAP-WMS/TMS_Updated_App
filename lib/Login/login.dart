@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_management_system/Login/forgot.dart';
 import 'package:ticket_management_system/screens/split_Screen.dart';
 import 'package:ticket_management_system/utils/colors.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -143,17 +145,15 @@ class _LoginPageState extends State<LoginPage> {
                       if (_formKey.currentState!.validate()) {
                         showCupertinoDialog(
                           context: context,
-                          builder: (context) => CupertinoAlertDialog(
+                          builder: (context) => const CupertinoAlertDialog(
                             content: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
-                              children: const [
+                              children: [
                                 SizedBox(
                                   height: 50,
                                   width: 50,
                                   child: Center(
-                                    child: CircularProgressIndicator(
-                                        color:
-                                            Color.fromARGB(255, 151, 64, 69)),
+                                    child: LoadingPage(),
                                   ),
                                 ),
                                 Text(
@@ -242,7 +242,9 @@ class _LoginPageState extends State<LoginPage> {
 
       if (userDoc.docs.isNotEmpty) {
         final storedPassword = userDoc.docs[0]['password'];
-        print(storedPassword);
+        if (kDebugMode) {
+          print(storedPassword);
+        }
         if (password == storedPassword) {
           storeLoginData(true, userIDController.text);
 

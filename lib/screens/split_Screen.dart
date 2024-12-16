@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ticket_management_system/Homescreen.dart';
 import 'package:ticket_management_system/Service%20Provider/service_home.dart';
 import 'package:ticket_management_system/screens/splash_service.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 import '../utils/colors.dart';
 
@@ -34,8 +35,7 @@ class _splitScreenState extends State<splitScreen> {
     return Scaffold(
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(
-              color: appColor,
+              child: LoadingPage(
             ))
           : Column(
               mainAxisAlignment: MainAxisAlignment.center,

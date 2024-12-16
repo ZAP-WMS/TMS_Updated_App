@@ -1,22 +1,22 @@
-import 'dart:convert';
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 // import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_management_system/provider/raisedata_provider.dart';
-import 'package:ticket_management_system/screens/image.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
+
 import '../provider/filter_provider.dart';
 import '../utils/colors.dart';
-import 'package:http/http.dart' as http;
 
 class Raise extends StatefulWidget {
   Raise({super.key, required this.userID});
@@ -109,6 +109,7 @@ class _RaiseState extends State<Raise> {
     });
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -120,6 +121,7 @@ class _RaiseState extends State<Raise> {
             Text(
               _getCurrentDate(),
               style: const TextStyle(
+                color: Colors.white,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -172,8 +174,7 @@ class _RaiseState extends State<Raise> {
 
                                           filterProvider.fetchFcmID(
                                               provider.selectedWork.toString());
-                                          provider.resetSpecificSelection(
-                                              );
+                                          provider.resetSpecificSelection();
                                         },
                                         decoration: InputDecoration(
                                           labelText: 'Work',
@@ -475,7 +476,10 @@ class _RaiseState extends State<Raise> {
                                           setState(() {});
                                         }
                                       },
-                                      child: const Text('Pick Images')),
+                                      child: const Text(
+                                        'Pick Images',
+                                        style: TextStyle(color: Colors.white),
+                                      )),
                                 ),
                                 ElevatedButton(
                                     style: ElevatedButton.styleFrom(
@@ -495,7 +499,10 @@ class _RaiseState extends State<Raise> {
                                         });
                                       }
                                     },
-                                    child: const Text('Capture Images')),
+                                    child: const Text(
+                                      'Capture Images',
+                                      style: TextStyle(color: Colors.white),
+                                    )),
                                 ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: appColor,
@@ -514,14 +521,7 @@ class _RaiseState extends State<Raise> {
                                                   height: 50,
                                                   width: 50,
                                                   child: Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    151,
-                                                                    64,
-                                                                    69)),
+                                                    child: LoadingPage(),
                                                   ),
                                                 ),
                                                 Text(
@@ -565,7 +565,10 @@ class _RaiseState extends State<Raise> {
                                         });
                                       }
                                     },
-                                    child: const Text('Save'))
+                                    child: const Text(
+                                      'Save',
+                                      style: TextStyle(color: Colors.white),
+                                    )),
                               ],
                             ),
                           ],

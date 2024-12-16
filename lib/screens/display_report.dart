@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ticket_management_system/screens/image.dart';
 import 'package:ticket_management_system/utils/colors.dart';
 
 import '../provider/filter_provider.dart';
@@ -119,6 +118,7 @@ class _ReportDetailsState extends State<ReportDetails> {
     ];
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           iconTheme: const IconThemeData(color: Colors.white),
           title: const Text(
             'Report Details',
@@ -134,7 +134,7 @@ class _ReportDetailsState extends State<ReportDetails> {
           return filterProvider.isLoading
               ? const LoadingPage()
               // Center(
-              //     child: CircularProgressIndicator(
+              //     child: LoadingPage(
               //     color: appColor,
               //   ))
               : filterProvider.filteredData.isEmpty

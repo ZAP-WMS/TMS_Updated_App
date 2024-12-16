@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 // ignore: must_be_immutable
 class ReportDetails extends StatefulWidget {
@@ -82,6 +83,7 @@ class _ReportDetailsState extends State<ReportDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           'Report Details',
@@ -91,7 +93,7 @@ class _ReportDetailsState extends State<ReportDetails> {
         backgroundColor: Color.fromARGB(255, 141, 36, 41),
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: LoadingPage())
           : Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               widget.ticketList.isNotEmpty
                   ? SizedBox(

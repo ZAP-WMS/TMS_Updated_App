@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:ticket_management_system/screens/image.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 int globalIndex = 0;
 
@@ -75,11 +74,15 @@ class _pendingState extends State<pending> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Color.fromARGB(255, 141, 36, 41),
-          title: const Text('Pending Tickets'),
+          title: const Text(
+            'Pending Tickets',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: LoadingPage())
             : ticketList.isNotEmpty
                 ? ListView.builder(
                     itemCount: ticketList.length,
@@ -91,7 +94,7 @@ class _pendingState extends State<pending> {
                           shadowColor: Colors.red,
                           child: Container(
                               height: 280,
-                              padding: const EdgeInsets.all(5),
+                              padding: const EdgeInsets.all(10),
                               child: Column(
                                 children: [
                                   Text(ticketListData[index]['tickets'],
@@ -340,7 +343,7 @@ class _pendingState extends State<pending> {
             .get();
         temp = ticketQuery.docs.map((e) => e.id).toList();
         // ticketList = ticketList + temp;
-       temp = temp.reversed.toList();
+        temp = temp.reversed.toList();
         if (temp.isNotEmpty) {
           ticketList.addAll(temp);
           // ticketList = ticketList.reversed.toList();
