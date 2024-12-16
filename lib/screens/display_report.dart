@@ -639,15 +639,15 @@ class _ReportDetailsState extends State<ReportDetails> {
                 alignment: Alignment.centerLeft,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ImageScreen(
-                                  pageTitle: 'pendingPage',
-                                  imageFiles: imageFilePaths,
-                                  initialIndex: 0,
-                                  ticketId: 'ticketList[0]',
-                                )));
+                    // Navigator.push(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => ImageScreen(
+                    //               pageTitle: 'pendingPage',
+                    //               imageFiles: imageFilePaths,
+                    //               initialIndex: 0,
+                    //               ticketId: 'ticketList[0]',
+                    //             )));
                   },
                   child: Row(
                     children: imageFilePaths.map<Widget>((item) {

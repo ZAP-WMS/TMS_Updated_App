@@ -404,23 +404,23 @@ class _RaiseState extends State<Raise> {
                                           itemBuilder: (context, index) {
                                             return GestureDetector(
                                               onTap: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ImageScreen(
-                                                              pageTitle:
-                                                                  'raisePage',
-                                                              imageFile:
-                                                                  Imagenames![
-                                                                      index],
-                                                              imageFiles:
-                                                                  Imagenames!,
-                                                              initialIndex:
-                                                                  index,
-                                                              ticketId:
-                                                                  ticketID,
-                                                            )));
+                                                // Navigator.push(
+                                                //     context,
+                                                //     MaterialPageRoute(
+                                                //         builder: (context) =>
+                                                //             ImageScreen(
+                                                //               pageTitle:
+                                                //                   'raisePage',
+                                                //               imageFile:
+                                                //                   Imagenames![
+                                                //                       index],
+                                                //               imageFiles:
+                                                //                   Imagenames!,
+                                                //               initialIndex:
+                                                //                   index,
+                                                //               ticketId:
+                                                //                   ticketID,
+                                                //             )));
                                               },
                                               child: Center(
                                                 child: Container(

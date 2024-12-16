@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:ticket_management_system/screens/image.dart';
 
 // ignore: must_be_immutable
 class ReportDetails extends StatefulWidget {
@@ -292,23 +290,23 @@ class _ReportDetailsState extends State<ReportDetails> {
                                                     width: 60,
                                                     child: GestureDetector(
                                                       onTap: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        ImageScreen(
-                                                                          pageTitle:
-                                                                              'pendingPage',
-                                                                          imageFiles:
-                                                                              imageFilePaths,
-                                                                          initialIndex:
-                                                                              index2,
-                                                                          imageFile:
-                                                                              imageFilePaths[index2],
-                                                                          ticketId:
-                                                                              ticketList[index],
-                                                                        )));
+                                                        // Navigator.push(
+                                                        //     context,
+                                                        //     MaterialPageRoute(
+                                                        //         builder:
+                                                        //             (context) =>
+                                                        //                 ImageScreen(
+                                                        //                   pageTitle:
+                                                        //                       'pendingPage',
+                                                        //                   imageFiles:
+                                                        //                       imageFilePaths,
+                                                        //                   initialIndex:
+                                                        //                       index2,
+                                                        //                   imageFile:
+                                                        //                       imageFilePaths[index2],
+                                                        //                   ticketId:
+                                                        //                       ticketList[index],
+                                                        //                 )));
                                                       },
                                                       child: Image.network(
                                                         imageFilePaths[index2],

@@ -141,18 +141,18 @@ class _displayReportState extends State<displayReport> {
                                   width: 60,
                                   child: GestureDetector(
                                     onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => ImageScreen(
-                                                    pageTitle: 'pendingPage',
-                                                    imageFiles: imageFilePaths,
-                                                    initialIndex: index2,
-                                                    imageFile:
-                                                        imageFilePaths[index2],
-                                                    ticketId: widget
-                                                        .ticketList[index],
-                                                  )));
+                                      // Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //         builder: (context) => ImageScreen(
+                                      //               pageTitle: 'pendingPage',
+                                      //               imageFiles: imageFilePaths,
+                                      //               initialIndex: index2,
+                                      //               imageFile:
+                                      //                   imageFilePaths[index2],
+                                      //               ticketId: widget
+                                      //                   .ticketList[index],
+                                      //             )));
                                     },
                                     child: Image.network(
                                       imageFilePaths[index2],
