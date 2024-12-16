@@ -459,7 +459,7 @@ class _FilteredReportState extends State<FilteredReport> {
         // provider.setBuilderList(floors);
       }
     }
-    print(floors);
+
     setState(() {});
   }
 

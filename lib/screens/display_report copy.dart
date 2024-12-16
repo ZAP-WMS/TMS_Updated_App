@@ -44,7 +44,7 @@ class _displayReportState extends State<displayReport> {
                                 color: Colors.deepPurple,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15)),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Row(

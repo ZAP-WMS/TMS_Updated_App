@@ -170,11 +170,10 @@ class _RaiseState extends State<Raise> {
                                           provider.setSelectedWork(
                                               value.toString());
 
-                                          // provider.getAsset(
-                                          //     _selectedWork.toString());
-
                                           filterProvider.fetchFcmID(
                                               provider.selectedWork.toString());
+                                          provider.resetSpecificSelection(
+                                              );
                                         },
                                         decoration: InputDecoration(
                                           labelText: 'Work',
@@ -285,8 +284,9 @@ class _RaiseState extends State<Raise> {
                                           _selectedRoom = value;
                                           provider.setSelectedRoom(
                                               _selectedRoom.toString());
-                                              provider.getAsset(
-                                              _selectedWork.toString(),_selectedRoom.toString());
+                                          provider.getAsset(
+                                              _selectedWork.toString(),
+                                              _selectedRoom.toString());
                                           // setState(() {
                                           //   _selectedRoom = value;
                                           //   getAsset();

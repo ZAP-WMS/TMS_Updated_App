@@ -407,7 +407,7 @@ class HomeScreenState extends State<HomeScreen>
                                                             radius: 12,
                                                             backgroundColor:
                                                                 const Color
-                                                                        .fromARGB(
+                                                                    .fromARGB(
                                                                     255,
                                                                     141,
                                                                     36,
@@ -540,7 +540,7 @@ class HomeScreenState extends State<HomeScreen>
                               ),
                               Center(
                                 child: Text(
-                                  'T.M.S v1.1',
+                                  'T.M.S v1.5',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,

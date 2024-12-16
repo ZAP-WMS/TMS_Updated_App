@@ -164,7 +164,8 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
                           elevation: 10,
                           shadowColor: Colors.red,
                           child: Container(
-                            padding: const EdgeInsets.all(5),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 30),
                             height: 320,
                             child: Column(
                               children: [
