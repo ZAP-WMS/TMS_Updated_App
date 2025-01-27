@@ -101,40 +101,43 @@ class HomeScreenState extends State<HomeScreen>
     await Firebase.initializeApp();
 
     // Get the current user
-
     if (widget.userID != null) {
-      // Check Firestore for an existing token
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('FcmToken')
-          .doc(widget.userID)
-          .get();
-
-      if (userDoc.exists) {
-        var data = userDoc.data() as Map<String, dynamic>;
-        _fcmToken = data['fcmToken'];
-        if (_fcmToken != null) {
-          await _storeTokenLocally(_fcmToken!);
-          print("FCM Token already exists: $_fcmToken");
-          return;
-        }
-      }
-
-      // Generate a new token if none exists
+      // Generate a new token first
       String? token = await _firebaseMessaging.getToken();
 
       if (token != null) {
+        // Check Firestore for an existing token
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('FcmToken')
+            .doc(widget.userID)
+            .get();
+
+        if (userDoc.exists) {
+          var data = userDoc.data() as Map<String, dynamic>;
+          String? storedToken = data['fcmToken'];
+
+          // If the generated token is the same as the stored one, no need to update
+          if (storedToken == token) {
+            print(
+                "FCM Token is the same as the stored token, no update needed.");
+            return;
+          }
+        }
+
+        // If the token is different or doesn't exist, update Firestore
         setState(() {
           _fcmToken = token;
         });
-        print("Generated FCM Token: $_fcmToken");
 
-        // Store the token in Firestore
+        print("Generated new FCM Token: $_fcmToken");
+
+        // Store the new token in Firestore
         await FirebaseFirestore.instance
             .collection('FcmToken')
             .doc(widget.userID)
             .set({
           'fcmToken': _fcmToken,
-          'lastUpdated': Timestamp.now(), // Optional
+          'lastUpdated': Timestamp.now(), // Optional timestamp
         }, SetOptions(merge: true)).then((_) {
           print("FCM Token stored successfully.");
         }).catchError((error) {
@@ -407,7 +410,7 @@ class HomeScreenState extends State<HomeScreen>
                                                             radius: 12,
                                                             backgroundColor:
                                                                 const Color
-                                                                    .fromARGB(
+                                                                        .fromARGB(
                                                                     255,
                                                                     141,
                                                                     36,
@@ -540,7 +543,7 @@ class HomeScreenState extends State<HomeScreen>
                               ),
                               Center(
                                 child: Text(
-                                  'T.M.S v1.5',
+                                  'T.M.S v1.6',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,

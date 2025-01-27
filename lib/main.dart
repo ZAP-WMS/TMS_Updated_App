@@ -48,8 +48,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => PiechartProvider()),
         ChangeNotifierProvider(create: (context) => NotificationProvider()),
         ChangeNotifierProvider(create: (context) => FilterProvider()),
-        ChangeNotifierProvider(create: (_) => RaiseDataProvider()),
-        ChangeNotifierProvider(create: (_) => ReportProvider()),
+        ChangeNotifierProvider(create: (context) => RaiseDataProvider()),
+        ChangeNotifierProvider(create: (context) => ReportProvider()),
       ],
       child: MaterialApp(
         navigatorObservers: [routeObserver],

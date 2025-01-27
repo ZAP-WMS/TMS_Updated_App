@@ -11,7 +11,6 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_management_system/provider/raisedata_provider.dart';
 import 'package:ticket_management_system/screens/image.dart';
 import '../provider/filter_provider.dart';
@@ -172,8 +171,7 @@ class _RaiseState extends State<Raise> {
 
                                           filterProvider.fetchFcmID(
                                               provider.selectedWork.toString());
-                                          provider.resetSpecificSelection(
-                                              );
+                                          provider.resetSpecificSelection();
                                         },
                                         decoration: InputDecoration(
                                           labelText: 'Work',
@@ -544,11 +542,11 @@ class _RaiseState extends State<Raise> {
                                           await storeRaisedTicket(ticketID)
                                               .whenComplete(() async {
                                             sendNotificationViaGet(
-                                                'https://dalmia-yppj.onrender.com/not',
+                                                'https://tms-notification.onrender.com/not/',
                                                 filterProvider.tokenId
                                                     .toString(),
-                                                'hii abdul',
-                                                'api is working');
+                                                ticketID,
+                                                'Ticket has been raised on your account.');
 
                                             provider.resetSelections();
                                             remarkController.clear();
@@ -978,7 +976,6 @@ class _RaiseState extends State<Raise> {
 
   Future<void> sendNotificationViaGet(
       String url, String token, String title, String message) async {
-    // Define the query parameters
     final queryParameters = {
       'token': token,
       'title': title,
@@ -986,12 +983,17 @@ class _RaiseState extends State<Raise> {
     };
 
     // Construct the URI with query parameters
-    final uri = Uri.parse(url).replace(queryParameters: queryParameters);
+    final uri = Uri.parse(url);
+    //.replace(queryParameters: queryParameters);
     print(uri);
 
     try {
-      // Perform the GET request with headers
-      final response = await http.get(uri);
+      final response = await http.post(uri,
+          headers: {
+            'Content-Type':
+                'application/json', // Set content type if sending JSON
+          },
+          body: jsonEncode(queryParameters));
       // Check if the request was successful
       if (response.statusCode == 200) {
         // Parse the response body if needed

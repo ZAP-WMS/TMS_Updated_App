@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ticket_management_system/Login/login.dart';
-import 'package:ticket_management_system/Service%20Provider/Servicesignup.dart';
 import 'package:ticket_management_system/Service%20Provider/service_home.dart';
 
 class LoginService extends StatefulWidget {
@@ -70,7 +67,7 @@ class _LoginServiceState extends State<LoginService> {
                             borderSide: BorderSide(color: Colors.blue)),
                         labelText: 'Username',
                         hintText: 'Enter your username',
-                        labelStyle: const TextStyle(color: Colors.black),
+                        labelStyle: TextStyle(color: Colors.black),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -173,7 +170,10 @@ class _LoginServiceState extends State<LoginService> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) =>  Homeservice(userID: '',)),
+              MaterialPageRoute(
+                  builder: (context) => Homeservice(
+                        userID: '',
+                      )),
               (route) => false);
         } else {
           SnackBar snackBar = const SnackBar(

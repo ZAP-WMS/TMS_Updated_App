@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_management_system/Login/login.dart';
@@ -8,6 +10,7 @@ import 'package:ticket_management_system/screens/filter_report.dart';
 import 'package:ticket_management_system/screens/profile.dart';
 import 'package:ticket_management_system/screens/split_Screen.dart';
 import '../provider/filter_provider.dart';
+import '../utils/colors.dart';
 
 class Homeservice extends StatefulWidget {
   Homeservice({super.key, required this.userID});
@@ -19,6 +22,8 @@ class Homeservice extends StatefulWidget {
 
 class HomeserviceState extends State<Homeservice>
     with SingleTickerProviderStateMixin {
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  String? _fcmToken;
   int notificationNum = 0;
   List<dynamic> ticketList = [];
   List<String> buttons = [
@@ -60,6 +65,7 @@ class HomeserviceState extends State<Homeservice>
   @override
   void initState() {
     filterProvider = Provider.of<FilterProvider>(context, listen: false);
+    _checkAndGenerateFcmToken();
 
     super.initState();
     // getNotification().whenComplete(() {
@@ -180,7 +186,7 @@ class HomeserviceState extends State<Homeservice>
                   children: [
                     SizedBox(
                         width: MediaQuery.of(context).size.width * 0.95,
-                        height: MediaQuery.of(context).size.height * 0.5,
+                        height: MediaQuery.of(context).size.height * 0.80,
                         child: GridView.builder(
                             itemCount: buttons.length,
                             gridDelegate:
@@ -234,6 +240,16 @@ class HomeserviceState extends State<Homeservice>
                             })),
                   ],
                 ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Text(
+                    'T.M.S v1.6',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: appColor),
+                  ),
+                )
               ],
             ),
           ),
@@ -261,6 +277,61 @@ class HomeserviceState extends State<Homeservice>
       }
     } catch (e) {
       print("Error Fetching ticket length: $e");
+    }
+  }
+
+  Future<void> _checkAndGenerateFcmToken() async {
+    // Ensure Firebase is initialized
+    await Firebase.initializeApp();
+
+    // Get the current user
+    if (widget.userID != null) {
+      // Generate a new token first
+      String? token = await _firebaseMessaging.getToken();
+
+      if (token != null) {
+        // Check Firestore for an existing token
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('FcmToken')
+            .doc(widget.userID)
+            .get();
+
+        if (userDoc.exists) {
+          var data = userDoc.data() as Map<String, dynamic>;
+          String? storedToken = data['fcmToken'];
+
+          // If the generated token is the same as the stored one, no need to update
+          if (storedToken == token) {
+            print(
+                "FCM Token is the same as the stored token, no update needed.");
+            return;
+          }
+        }
+
+        // If the token is different or doesn't exist, update Firestore
+        setState(() {
+          _fcmToken = token;
+        });
+
+        print("Generated new FCM Token: $_fcmToken");
+
+        // Store the new token in Firestore
+        await FirebaseFirestore.instance
+            .collection('FcmToken')
+            .doc(widget.userID)
+            .set({
+          'fcmToken': _fcmToken,
+          'lastUpdated': Timestamp.now(), // Optional timestamp
+        }, SetOptions(merge: true)).then((_) {
+          print("FCM Token stored successfully.");
+        }).catchError((error) {
+          print("Failed to store FCM token: $error");
+        });
+      } else {
+        print("Failed to generate FCM token");
+      }
+    } else {
+      print("No user is currently logged in.");
     }
   }
 }

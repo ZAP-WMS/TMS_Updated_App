@@ -120,7 +120,7 @@ class _pendingState extends State<pending> {
                                             ticketListData[index]['remark']
                                                 .toString(),
                                             ticketListData[index]
-                                                ['serviceProvider'],
+                                                ['serviceProvider']
                                           ];
 
                                           return customCard(icons[index2],
@@ -318,7 +318,7 @@ class _pendingState extends State<pending> {
                               )));
                     },
                   )
-                : Center(
+                : const Center(
                     child: Text('No Tickets Avilable'),
                   ));
   }
@@ -340,7 +340,7 @@ class _pendingState extends State<pending> {
             .get();
         temp = ticketQuery.docs.map((e) => e.id).toList();
         // ticketList = ticketList + temp;
-       temp = temp.reversed.toList();
+        temp = temp.reversed.toList();
         if (temp.isNotEmpty) {
           ticketList.addAll(temp);
           // ticketList = ticketList.reversed.toList();

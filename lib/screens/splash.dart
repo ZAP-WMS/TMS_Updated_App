@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +7,7 @@ import 'package:ticket_management_system/Homescreen.dart';
 import 'package:ticket_management_system/Login/login.dart';
 import 'package:ticket_management_system/screens/splash_service.dart';
 
+import '../Service Provider/service_home.dart';
 import '../provider/filter_provider.dart';
 
 class SpalashScreen extends StatefulWidget {
@@ -20,38 +22,70 @@ class SpalashScreenState extends State<SpalashScreen>
   final SplashService _splashService = SplashService();
   bool isLogin = false;
   String userId = '';
+  bool checkRole = true;
   late final FilterProvider filterProvider;
   double? height, width;
   @override
   void initState() {
     filterProvider = Provider.of<FilterProvider>(context, listen: false);
 
+    FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+    String _message = '';
+
     super.initState();
-    Timer(Duration(seconds: 3), () async {
+    Timer(const Duration(seconds: 3), () async {
       isLogin = await _splashService.checkLoginStatus(context);
       userId = await _splashService.getUserID();
       _splashService.getUserName(userId);
-      if (isLogin) {
-        // ignore: use_build_context_synchronously
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => HomeScreen(
-                      userID: userId,
-                    )));
-      } else {
-        Navigator.of(context)
-            .pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
-      }
+      await checkUserRole(userId);
+    });
+
+    _firebaseMessaging.requestPermission();
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      setState(() {
+        _message = message.notification?.title ?? 'No Title';
+      });
     });
   }
 
   @override
-  void dispose() {
-    // TODO: implement dispose
+  void dispose() {  
     super.dispose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: SystemUiOverlay.values);
+  }
+
+  // Assuming you're calling the function from an async method
+  checkUserRole(userId) async {
+    try {
+      checkRole = await _splashService.checkUserRole(userId);
+      if (checkRole) {
+        if (isLogin) {
+          // ignore: use_build_context_synchronously
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => HomeScreen(userID: userId)));
+        } else {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const LoginPage()));
+        }
+      } else {
+        if (isLogin) {
+          // ignore: use_build_context_synchronously
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Homeservice(userID: userId)));
+        } else {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const LoginPage()));
+        }
+      }
+    } catch (e) {
+      print("Error checking role: $e");
+    }
   }
 
   @override
@@ -59,7 +93,7 @@ class SpalashScreenState extends State<SpalashScreen>
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: Container(
+      body: SizedBox(
         width: double.infinity,
         // decoration: BoxDecoration(
         //   gradient: LinearGradient(

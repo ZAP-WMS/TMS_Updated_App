@@ -1,11 +1,12 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_management_system/utils/colors.dart';
-
+import 'package:http/http.dart' as http;
 import '../provider/filter_provider.dart';
 import '../screens/splash_service.dart';
 
@@ -179,7 +180,6 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
                                         const NeverScrollableScrollPhysics(),
                                     itemCount: titles.length,
                                     itemBuilder: (context, index2) {
-                                      print(ticketListData);
                                       message = [
                                         value.servicependingData[index]['work'],
                                         value.servicependingData[index]
@@ -207,12 +207,13 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
                                 ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                         backgroundColor: appColor),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       customAlert(
-                                          value.servicependingData[index]
-                                              ['date'],
-                                          value.servicependingData[index]
-                                              ['tickets']);
+                                        value.servicependingData[index]['date'],
+                                        value.servicependingData[index]
+                                            ['tickets'],
+                                        value.servicependingData[index]['user'],
+                                      );
                                     },
                                     child: const Text(
                                       "Task Accomplished",
@@ -237,9 +238,11 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
   }
 
   Future storeCompletedTicket(
-      // String year, String month,
-      String documents,
-      String ticketNumber) async {
+    // String year, String month,
+    String documents,
+    String ticketNumber,
+    String userId,
+  ) async {
     Navigator.pop(context);
     showCupertinoDialog(
       context: context,
@@ -298,6 +301,16 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
         "isUserSeen": true,
         'closedDate': currentDate
       });
+      await getFcmToken(userId).then((fcmToken) {
+        if (fcmToken.isNotEmpty) {
+          sendNotificationViaGet('https://tms-notification.onrender.com/not/',
+              fcmToken, ticketNumber, 'Your Ticket has been Closed.');
+
+          print('FCM Token: $fcmToken');
+        } else {
+          print('FCM Token not found');
+        }
+      });
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -315,7 +328,7 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
     });
   }
 
-  void customAlert(String documents, String ticketNumber) async {
+  void customAlert(String documents, String ticketNumber, String userId) async {
     await showDialog(
         context: context,
         builder: (context) {
@@ -349,7 +362,7 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
                       final DateTime now = DateTime.now();
                       final formattedDate = dateFormatter.format(now);
                       final formattedTime = timeFormatter.format(now);
-                      storeCompletedTicket(documents, ticketNumber);
+                      storeCompletedTicket(documents, ticketNumber, userId);
                     },
                     //  },
                     child: const Text(
@@ -470,6 +483,64 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
       }
     } catch (e) {
       print("Error Fetching tickets: $e");
+    }
+  }
+
+  Future<String> getFcmToken(String userId) async {
+    try {
+      // Fetch the document for the given userId
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('FcmToken')
+          .doc(userId)
+          .get();
+
+      // Check if the document exists
+      if (userDoc.exists) {
+        // Retrieve the token from the document
+        String fcmToken = userDoc[
+            'fcmToken']; // 'token' is the field where the FCM token is stored
+        return fcmToken;
+      } else {
+        // Handle case where document does not exist
+        return '';
+      }
+    } catch (e) {
+      // Handle any errors
+      print('Error fetching FCM token: $e');
+      return '';
+    }
+  }
+
+  Future<void> sendNotificationViaGet(
+      String url, String token, String title, String message) async {
+    final queryParameters = {
+      'token': token,
+      'title': title,
+      'message': message,
+    };
+
+    // Construct the URI with query parameters
+    final uri = Uri.parse(url);
+    //.replace(queryParameters: queryParameters);
+    print(uri);
+
+    try {
+      final response = await http.post(uri,
+          headers: {
+            'Content-Type':
+                'application/json', // Set content type if sending JSON
+          },
+          body: jsonEncode(queryParameters));
+      // Check if the request was successful
+      if (response.statusCode == 200) {
+        // Parse the response body if needed
+        final data = response.body;
+        print('Response data: $data');
+      } else {
+        print('Failed to fetch data. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
     }
   }
 }
