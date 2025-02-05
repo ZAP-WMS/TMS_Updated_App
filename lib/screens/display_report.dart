@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ticket_management_system/screens/image.dart';
 import 'package:ticket_management_system/utils/colors.dart';
 
 import '../provider/filter_provider.dart';
+import '../widget/image_screen.dart';
 import '../widget/loading_page.dart';
 
 // ignore: must_be_immutable
@@ -112,13 +112,14 @@ class _ReportDetailsState extends State<ReportDetails> {
       'Floor',
       'Room',
       'Asset',
-      'Username',
+      'User',
       'Service Provider',
       'Remark',
       'Image',
     ];
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           iconTheme: const IconThemeData(color: Colors.white),
           title: const Text(
             'Report Details',
@@ -134,7 +135,7 @@ class _ReportDetailsState extends State<ReportDetails> {
           return filterProvider.isLoading
               ? const LoadingPage()
               // Center(
-              //     child: CircularProgressIndicator(
+              //     child: LoadingPage(
               //     color: appColor,
               //   ))
               : filterProvider.filteredData.isEmpty
@@ -153,7 +154,7 @@ class _ReportDetailsState extends State<ReportDetails> {
                                 decoration: BoxDecoration(
                                     border: Border.all(
                                         color: appColor, width: 2.0)),
-                                height: 370,
+                                height: 390,
                                 child: ListView.builder(
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: titles.length,
@@ -194,8 +195,11 @@ class _ReportDetailsState extends State<ReportDetails> {
                                       data['remark'],
                                       imagePath!
                                     ];
-                                    return ticketCard(titles[index2],
-                                        message[index2], imageFilePaths);
+                                    return ticketCard(
+                                        data['tickets'],
+                                        titles[index2],
+                                        message[index2],
+                                        imageFilePaths);
                                   },
                                 ),
                               ),
@@ -624,8 +628,8 @@ class _ReportDetailsState extends State<ReportDetails> {
     }).toList();
   }
 
-  Widget ticketCard(
-      String title, String ticketListData, List<String> imageFilePaths) {
+  Widget ticketCard(String ticketId, String title, String ticketListData,
+      List<String> imageFilePaths) {
     List<dynamic> parsedData = parseTicketListData(ticketListData);
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -643,10 +647,11 @@ class _ReportDetailsState extends State<ReportDetails> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => ImageScreen(
-                                  pageTitle: 'pendingPage',
+                                  pageTitle: ticketId,
                                   imageFiles: imageFilePaths,
                                   initialIndex: 0,
                                   ticketId: 'ticketList[0]',
+                                  imageFile: item,
                                 )));
                   },
                   child: Row(

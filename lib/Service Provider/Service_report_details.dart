@@ -132,7 +132,7 @@
 //           return filterProvider.isLoading
 //               ? LoadingPage()
 //               // Center(
-//               //     child: CircularProgressIndicator(
+//               //     child: LoadingPage(
 //               //     color: appColor,
 //               //   ))
 //               : filterProvider.filteredData.isEmpty

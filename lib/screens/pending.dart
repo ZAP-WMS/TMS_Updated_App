@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:ticket_management_system/screens/image.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
+
+import '../widget/image_screen.dart';
 
 int globalIndex = 0;
 
@@ -60,6 +61,7 @@ class _pendingState extends State<pending> {
       Icons.layers,
       Icons.room,
       Icons.account_balance,
+      Icons.person,
       Icons.comment,
       Icons.design_services
     ];
@@ -69,29 +71,36 @@ class _pendingState extends State<pending> {
       'Floor',
       'Room',
       'Assets',
+      'User',
       'Remark',
       'Service Provider'
     ];
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Color.fromARGB(255, 141, 36, 41),
-          title: const Text('Pending Tickets'),
+          title: const Text(
+            'Pending Tickets',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: LoadingPage())
             : ticketList.isNotEmpty
                 ? ListView.builder(
                     itemCount: ticketList.length,
                     itemBuilder: (context, index) {
+                      List<dynamic> imageFilePaths =
+                          ticketListData[index]['imageFilePaths'];
                       return Card(
                           margin: const EdgeInsets.all(10),
                           color: const Color.fromARGB(255, 240, 210, 247),
                           elevation: 10,
                           shadowColor: Colors.red,
                           child: Container(
-                              height: 280,
-                              padding: const EdgeInsets.all(5),
+                              height: 380,
+                              padding: const EdgeInsets.all(10),
                               child: Column(
                                 children: [
                                   Text(ticketListData[index]['tickets'],
@@ -105,8 +114,6 @@ class _pendingState extends State<pending> {
                                         itemCount: titles.length, //* 2 - 1,
                                         itemBuilder:
                                             (BuildContext context, int index2) {
-                                          // List<dynamic> imageFilePaths =
-                                          //     ticketListData[index]['imageFilePaths'];
                                           // if (index.isOdd) {
                                           //   return Divider();
                                           // }
@@ -117,14 +124,18 @@ class _pendingState extends State<pending> {
                                             ticketListData[index]['floor'],
                                             ticketListData[index]['room'],
                                             ticketListData[index]['asset'],
+                                            ticketListData[index]['name'],
                                             ticketListData[index]['remark']
                                                 .toString(),
                                             ticketListData[index]
                                                 ['serviceProvider']
                                           ];
 
-                                          return customCard(icons[index2],
-                                              titles[index2], message[index2]);
+                                          return customCard(
+                                            icons[index2],
+                                            titles[index2],
+                                            message[index2],
+                                          );
                                           // Padding(
                                           //   padding: const EdgeInsets.all(8.0),
                                           //   child: Card(
@@ -314,6 +325,49 @@ class _pendingState extends State<pending> {
                                           // );
                                         }),
                                   ),
+                                  SizedBox(
+                                    height: 50,
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: List.generate(
+                                            imageFilePaths.length, (index2) {
+                                          return Container(
+                                            height: 100,
+                                            width: 60,
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ImageScreen(
+                                                              pageTitle:
+                                                                  ticketListData[
+                                                                          index]
+                                                                      [
+                                                                      'tickets'],
+                                                              imageFiles:
+                                                                  imageFilePaths,
+                                                              initialIndex:
+                                                                  index2,
+                                                              imageFile:
+                                                                  imageFilePaths[
+                                                                      index2],
+                                                              ticketId:
+                                                                  ticketList[
+                                                                      index],
+                                                            )));
+                                              },
+                                              child: Image.network(
+                                                imageFilePaths[index2],
+                                              ),
+                                            ),
+                                          );
+                                        }),
+                                      ),
+                                    ),
+                                  )
                                 ],
                               )));
                     },
@@ -425,31 +479,35 @@ class _pendingState extends State<pending> {
   Widget customCard(IconData icons, String title, String message) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 2),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icons, color: const Color.fromARGB(255, 197, 66, 73)),
-              const SizedBox(width: 10),
-              Text(
-                title,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(icons, color: const Color.fromARGB(255, 197, 66, 73)),
+                  const SizedBox(width: 10),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ],
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: SizedBox(
+                  width: 100,
+                  child: Text(
+                    message,
+                    style: const TextStyle(fontSize: 15),
+                  ),
+                ),
               ),
             ],
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: SizedBox(
-              width: 100,
-              child: Text(
-                message,
-                style: const TextStyle(fontSize: 15),
-              ),
-            ),
           ),
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 class TicketScreen extends StatefulWidget {
   final String Number;
@@ -36,12 +37,13 @@ class _TicketScreenState extends State<TicketScreen> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: Text('Ticket ${widget.Number}'),
           centerTitle: true,
           backgroundColor: Colors.deepPurple),
       body: loading
           ? const Center(
-              child: CircularProgressIndicator(),
+              child: LoadingPage(),
             )
           : Container(
               height: MediaQuery.of(context).size.height * 0.9,

@@ -9,6 +9,7 @@ import 'package:ticket_management_system/utils/colors.dart';
 import 'package:http/http.dart' as http;
 import '../provider/filter_provider.dart';
 import '../screens/splash_service.dart';
+import '../widget/loading_page.dart';
 
 class pendingstatus_service extends StatefulWidget {
   pendingstatus_service({
@@ -130,6 +131,7 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
       Icons.layers,
       Icons.room,
       Icons.account_balance,
+      Icons.person,
       Icons.comment,
       Icons.design_services
     ];
@@ -139,22 +141,21 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
       'Floor',
       'Room',
       'Assets',
+      'User',
       'Remark',
       'Service Provider'
     ];
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Tickets'),
+          automaticallyImplyLeading: false,
+          title: const Text('Tickets', style: TextStyle(color: Colors.white)),
           centerTitle: true,
           backgroundColor: const Color.fromARGB(255, 197, 66, 73)),
       body: Consumer<FilterProvider>(
         builder: (context, value, child) {
           return value.serviceLoading
-              ? Center(
-                  child: CircularProgressIndicator(
-                  color: appColor,
-                ))
+              ? Center(child: LoadingPage())
               : value.servicependingData.isNotEmpty
                   ? ListView.builder(
                       itemCount: value.servicependingData.length,
@@ -167,7 +168,7 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 5, horizontal: 30),
-                            height: 320,
+                            height: 340,
                             child: Column(
                               children: [
                                 Text(value.servicependingData[index]['tickets'],
@@ -189,6 +190,7 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
                                         value.servicependingData[index]['room'],
                                         value.servicependingData[index]
                                             ['asset'],
+                                        value.servicependingData[index]['name'],
                                         value.servicependingData[index]
                                                 ['remark']
                                             .toString(),
@@ -254,8 +256,7 @@ class _pendingstatus_serviceState extends State<pendingstatus_service> {
               height: 50,
               width: 50,
               child: Center(
-                child: CircularProgressIndicator(
-                    color: Color.fromARGB(255, 151, 64, 69)),
+                child: LoadingPage(),
               ),
             ),
             Text(

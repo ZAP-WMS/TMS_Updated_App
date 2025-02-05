@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 void showSavingDialog(BuildContext context, String title) {
   showCupertinoDialog(
@@ -15,8 +16,7 @@ void showSavingDialog(BuildContext context, String title) {
                 height: 50,
                 width: 50,
                 child: Center(
-                  child: CircularProgressIndicator(
-                      color: Color.fromARGB(255, 151, 64, 69)),
+                  child: LoadingPage(),
                 ),
               ),
               const SizedBox(height: 20),

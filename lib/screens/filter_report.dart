@@ -8,6 +8,7 @@ import 'package:ticket_management_system/provider/getReport_provider.dart';
 import 'package:ticket_management_system/screens/display_report.dart';
 import 'package:ticket_management_system/screens/splash_service.dart';
 import 'package:ticket_management_system/utils/colors.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 import '../utils/loading.dart';
 
 class FilteredReport extends StatefulWidget {
@@ -126,6 +127,7 @@ class _FilteredReportState extends State<FilteredReport> {
     // dataProvider.fetchAssets();
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
         title: const Text(
@@ -150,7 +152,7 @@ class _FilteredReportState extends State<FilteredReport> {
         // ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: LoadingPage())
           : Consumer<ReportProvider>(
               builder: (context, provider, child) {
                 return Container(
@@ -391,7 +393,8 @@ class _FilteredReportState extends State<FilteredReport> {
                                       }
                                       //});
                                     },
-                                    child: const Text('Get Report'),
+                                    child: const Text('Get Report',
+                                        style: TextStyle(color: Colors.white)),
                                   ),
                                   const SizedBox(
                                     width: 15,

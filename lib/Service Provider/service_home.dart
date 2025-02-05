@@ -9,6 +9,7 @@ import 'package:ticket_management_system/Service%20Provider/serviceNotification.
 import 'package:ticket_management_system/screens/filter_report.dart';
 import 'package:ticket_management_system/screens/profile.dart';
 import 'package:ticket_management_system/screens/split_Screen.dart';
+
 import '../provider/filter_provider.dart';
 import '../utils/colors.dart';
 
@@ -84,6 +85,7 @@ class HomeserviceState extends State<Homeservice>
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           centerTitle: true,
           backgroundColor: Colors.white,
           title: const Text(
@@ -243,7 +245,7 @@ class HomeserviceState extends State<Homeservice>
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Text(
-                    'T.M.S v1.6',
+                    'T.M.S v1.6.1',
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

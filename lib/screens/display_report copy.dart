@@ -1,7 +1,4 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter/material.dart';
-import 'package:ticket_management_system/screens/image.dart';
 
 class displayReport extends StatefulWidget {
   List<dynamic> ticketList = [];
@@ -18,8 +15,12 @@ class _displayReportState extends State<displayReport> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.deepPurple,
-          title: const Text('Report Tickets'),
+          title: const Text(
+            'Report Tickets',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: ListView.builder(
             itemCount: widget.ticketList.length, //* 2 - 1,
@@ -141,18 +142,18 @@ class _displayReportState extends State<displayReport> {
                                   width: 60,
                                   child: GestureDetector(
                                     onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => ImageScreen(
-                                                    pageTitle: 'pendingPage',
-                                                    imageFiles: imageFilePaths,
-                                                    initialIndex: index2,
-                                                    imageFile:
-                                                        imageFilePaths[index2],
-                                                    ticketId: widget
-                                                        .ticketList[index],
-                                                  )));
+                                      // Navigator.push(
+                                      //     context,
+                                      //     MaterialPageRoute(
+                                      //         builder: (context) => ImageScreen(
+                                      //               pageTitle: 'pendingPage',
+                                      //               imageFiles: imageFilePaths,
+                                      //               initialIndex: index2,
+                                      //               imageFile:
+                                      //                   imageFilePaths[index2],
+                                      //               ticketId: widget
+                                      //                   .ticketList[index],
+                                      //             )));
                                     },
                                     child: Image.network(
                                       imageFilePaths[index2],

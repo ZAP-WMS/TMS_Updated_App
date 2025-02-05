@@ -1,10 +1,6 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 class pendingstatus extends StatefulWidget {
   final String Number;
@@ -29,7 +25,6 @@ class _pendingstatusState extends State<pendingstatus> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getTicketData();
   }
@@ -39,16 +34,19 @@ class _pendingstatusState extends State<pendingstatus> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.deepPurple,
-        title: Text('Ticket ${widget.Number}'),
+        title: Text(
+          'Ticket ${widget.Number}',
+          style: const TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
       ),
       body: loading
           ? const Center(
-              child: CircularProgressIndicator(),
+              child: LoadingPage(),
             )
-          : 
-          SingleChildScrollView(
+          : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
@@ -62,9 +60,7 @@ class _pendingstatusState extends State<pendingstatus> {
                                 color: Colors.deepPurple,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 15)),
-                        SizedBox(
-                          height: 10,
-                        ),
+                        const SizedBox(height: 10),
                         Row(
                           children: [
                             const Icon(
@@ -280,7 +276,7 @@ class _pendingstatusState extends State<pendingstatus> {
   //                 return const Text('File not found');
   //               }
   //             } else {
-  //               return const CircularProgressIndicator();
+  //               return const LoadingPage();
   //             }
   //           });
   //     }).toList(),

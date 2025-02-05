@@ -41,7 +41,8 @@ class _resetPasswordState extends State<resetPassword> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Reset Password'),
+        automaticallyImplyLeading: false,
+          title: const Text('Reset Password',style: TextStyle(color: Colors.white),),
           backgroundColor: Colors.deepPurple,
         ),
         body: SingleChildScrollView(
@@ -122,7 +123,8 @@ class _resetPasswordState extends State<resetPassword> {
                                 );
                               }
                             },
-                            child: const Text('Change Password'),
+                            child: const Text('Change Password',
+                                style: TextStyle(color: Colors.white)),
                           ),
                         ],
                       ),

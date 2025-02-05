@@ -29,9 +29,7 @@ void main() async {
         measurementId: "G-88TQTEM40C"),
   );
 
-  await FlutterDownloader.initialize(
-      debug: true // Set this to false in production
-      );
+  await FlutterDownloader.initialize(debug: true);
 
   runApp(const MyApp());
 }

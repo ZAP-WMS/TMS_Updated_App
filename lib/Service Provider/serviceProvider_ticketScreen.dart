@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 class serviceProvieder_ticketScreen extends StatefulWidget {
   final String Number;
@@ -8,10 +9,12 @@ class serviceProvieder_ticketScreen extends StatefulWidget {
       {super.key, required this.Number, required this.showResolvedTickets});
 
   @override
-  State<serviceProvieder_ticketScreen> createState() => _serviceProvieder_ticketScreenState();
+  State<serviceProvieder_ticketScreen> createState() =>
+      _serviceProvieder_ticketScreenState();
 }
 
-class _serviceProvieder_ticketScreenState extends State<serviceProvieder_ticketScreen> {
+class _serviceProvieder_ticketScreenState
+    extends State<serviceProvieder_ticketScreen> {
   String asset = '';
   String building = '';
   String floor = '';
@@ -36,12 +39,14 @@ class _serviceProvieder_ticketScreenState extends State<serviceProvieder_ticketS
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-          title: Text('Ticket ${widget.Number}'),
+          automaticallyImplyLeading: false,
+          title: Text('Ticket ${widget.Number}',
+              style: TextStyle(color: Colors.white)),
           centerTitle: true,
           backgroundColor: Colors.deepPurple),
       body: loading
           ? const Center(
-              child: CircularProgressIndicator(),
+              child: LoadingPage(),
             )
           : Container(
               height: MediaQuery.of(context).size.height * 0.9,

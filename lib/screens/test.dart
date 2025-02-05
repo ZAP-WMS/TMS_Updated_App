@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class dash extends StatefulWidget {
   const dash({super.key});
@@ -14,7 +12,11 @@ class _dashState extends State<dash> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('DashBoard'),
+        automaticallyImplyLeading: false,
+        title: Text(
+          'DashBoard',
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: Center(
         child: Container(

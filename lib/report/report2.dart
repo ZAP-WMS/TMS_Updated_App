@@ -20,14 +20,20 @@ class _Report2State extends State<Report2> {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
-        appBar: AppBar(centerTitle: true, title: const Text('Report2')),
+        appBar: AppBar(
+            automaticallyImplyLeading: false,
+            centerTitle: true,
+            title: const Text(
+              'Report2',
+              style: TextStyle(color: Colors.white),
+            )),
         body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
-                 Text(
+                Text(
                   'Ticket #: 12345', // Display your ticket number here
                   style: TextStyle(
                     color: Colors.blue,
@@ -35,7 +41,7 @@ class _Report2State extends State<Report2> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                 Text(
+                Text(
                   'Status - Open',
                   style: TextStyle(
                     color: Colors.blue,
@@ -106,7 +112,7 @@ class _Report2State extends State<Report2> {
                         ),
                       ),
                     ),
-                   const SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
                     const Align(
@@ -119,9 +125,9 @@ class _Report2State extends State<Report2> {
                         ),
                       ),
                     ),
-                   const Expanded(
+                    const Expanded(
                       child: Padding(
-                        padding:  EdgeInsets.only(top: 8.0),
+                        padding: EdgeInsets.only(top: 8.0),
                         child: TextField(
                           maxLines: null,
                           decoration: InputDecoration(
@@ -143,7 +149,10 @@ class _Report2State extends State<Report2> {
               children: [
                 ElevatedButton(
                   onPressed: () {},
-                  child: const Text('Picture'),
+                  child: const Text(
+                    'Picture',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(20),

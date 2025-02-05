@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_management_system/screens/notification_ticket.dart';
 import 'package:ticket_management_system/screens/splash_service.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 import '../provider/filter_provider.dart';
 import '../utils/colors.dart';
 
@@ -76,18 +77,24 @@ class _NotificationScreenState extends State<NotificationScreen> {
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: const Color.fromARGB(255, 141, 36, 41),
-          title: const Text('Notifications'),
+          title: const Text(
+            'Notifications',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(child: LoadingPage())
             : Consumer<FilterProvider>(
                 builder: (context, value, child) {
+                  List<Map<String, dynamic>> dataList =
+                      List.from(value.closeData.reversed);
+
                   return ListView.builder(
-                      itemCount: value.closeData.length,
+                      itemCount: dataList.length,
                       itemBuilder: (BuildContext context, int index) {
-                        String notificationTime =
-                            value.closeData[index]['date'];
+                        String notificationTime = dataList[index]['date'];
                         // DateTime dateTime = DateTime.parse(notificationTime);
                         // // Define the desired format
                         // DateFormat formatter = DateFormat(
@@ -102,15 +109,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               builder: (context) {
                                 return NotificationTicket(
                                     userId: userId,
-                                    date: value.closeData[index]['date'],
-                                    ticketNo: value.closeData[index]
-                                        ['tickets']);
+                                    date: dataList[index]['date'],
+                                    ticketNo: dataList[index]['tickets']);
                               },
                             ));
                           },
                           child: notificaionCard(
                               notificationTime,
-                              value.closeData[index]['tickets'],
+                              dataList[index]['tickets'],
                               'This ticket has been closed and the case has been resolved'),
                         );
 

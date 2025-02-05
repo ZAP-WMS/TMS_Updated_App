@@ -323,24 +323,38 @@ class FilterProvider with ChangeNotifier {
             .where('user', isEqualTo: userId)
             .get();
 
-        for (DocumentSnapshot ticket in ticketsSnapshot.docs) {
-          // Fetch each ticket document
-          DocumentSnapshot ticketData = await _firestore
-              .collection('UserNotification')
-              .doc(raisedTicket.id)
-              .collection('tickets')
-              .doc(ticket.id)
-              .get();
-
+        // Loop through each document in the query snapshot.
+        for (DocumentSnapshot ticketData in ticketsSnapshot.docs) {
           if (ticketData.exists) {
+            // Convert the document data to a map.
             Map<String, dynamic>? ticketDataMap =
                 ticketData.data() as Map<String, dynamic>?;
 
             if (ticketDataMap != null) {
+              // Add the data to your list.
               allRaisedTicketData.add(ticketDataMap);
             }
           }
         }
+
+        // for (DocumentSnapshot ticket in ticketsSnapshot.docs) {
+        //   // Fetch each ticket document
+        //   DocumentSnapshot ticketData = await _firestore
+        //       .collection('UserNotification')
+        //       .doc(raisedTicket.id)
+        //       .collection('tickets')
+        //       .doc(ticket.id)
+        //       .get();
+
+        //   if (ticketData.exists) {
+        //     Map<String, dynamic>? ticketDataMap =
+        //         ticketData.data() as Map<String, dynamic>?;
+
+        //     if (ticketDataMap != null) {
+        //       allRaisedTicketData.add(ticketDataMap);
+        //     }
+        //   }
+        // }
       }
 
       // Apply filter on the collected ticket data
@@ -371,6 +385,7 @@ class FilterProvider with ChangeNotifier {
         _openData = openData;
         _closeData = closeData;
         _closeDataLength = allRaisedTicketData.length - openData.length;
+
         _isopenLoading = false;
         notifyListeners();
       } catch (e) {

@@ -17,6 +17,7 @@ import 'package:ticket_management_system/screens/raise.dart';
 import 'package:ticket_management_system/screens/splash_service.dart';
 import 'package:ticket_management_system/screens/split_Screen.dart';
 import 'package:ticket_management_system/utils/colors.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({super.key, required this.userID});
@@ -97,7 +98,6 @@ class HomeScreenState extends State<HomeScreen>
   }
 
   Future<void> _checkAndGenerateFcmToken() async {
-    // Ensure Firebase is initialized
     await Firebase.initializeApp();
 
     // Get the current user
@@ -116,7 +116,6 @@ class HomeScreenState extends State<HomeScreen>
           var data = userDoc.data() as Map<String, dynamic>;
           String? storedToken = data['fcmToken'];
 
-          // If the generated token is the same as the stored one, no need to update
           if (storedToken == token) {
             print(
                 "FCM Token is the same as the stored token, no update needed.");
@@ -124,7 +123,6 @@ class HomeScreenState extends State<HomeScreen>
           }
         }
 
-        // If the token is different or doesn't exist, update Firestore
         setState(() {
           _fcmToken = token;
         });
@@ -156,27 +154,6 @@ class HomeScreenState extends State<HomeScreen>
     await prefs.setString('fcmToken', token);
     print("FCM Token stored locally.");
   }
-  // void _setupTokenRefresh() {
-  //   FirebaseMessaging.onTokenRefresh.listen((newToken) async {
-  //     print("Refreshed FCM Token: $newToken");
-  //     setState(() {
-  //       _fcmToken = newToken;
-  //     });
-
-  //     // Update the token in Firestore
-  //     User? user = FirebaseAuth.instance.currentUser;
-  //     if (user != null) {
-  //       await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-  //         'fcmToken': _fcmToken,
-  //         'lastUpdated': Timestamp.now(), // Optional
-  //       }, SetOptions(merge: true)).then((_) {
-  //         print("FCM Token updated successfully.");
-  //       }).catchError((error) {
-  //         print("Failed to update FCM token: $error");
-  //       });
-  //     }
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -189,6 +166,8 @@ class HomeScreenState extends State<HomeScreen>
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          elevation: 5,
+          automaticallyImplyLeading: false,
           centerTitle: true,
           backgroundColor: Colors.white,
           title: const Text(
@@ -210,6 +189,7 @@ class HomeScreenState extends State<HomeScreen>
                   ).whenComplete(() async {
                     await Provider.of<FilterProvider>(context, listen: false)
                         .updateUserSeen(widget.userID);
+                    // ignore: use_build_context_synchronously
                     await Provider.of<FilterProvider>(context, listen: false)
                         .getNotificationLength(widget.userID);
                   });
@@ -242,7 +222,7 @@ class HomeScreenState extends State<HomeScreen>
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                color: Color.fromARGB(255, 197, 66, 73),
+                color: const Color.fromARGB(255, 197, 66, 73),
                 height: MediaQuery.of(context).size.height * 0.2,
                 width: MediaQuery.of(context).size.width * 0.2,
                 child: GestureDetector(
@@ -291,10 +271,7 @@ class HomeScreenState extends State<HomeScreen>
             final openTicketlength = value.openData.length;
 
             return value.openLoading
-                ? Center(
-                    child: CircularProgressIndicator(
-                    color: appColor,
-                  ))
+                ? const Center(child: LoadingPage())
                 : LayoutBuilder(
                     builder: (context, constraints) {
                       bool isLandscape =
@@ -543,7 +520,7 @@ class HomeScreenState extends State<HomeScreen>
                               ),
                               Center(
                                 child: Text(
-                                  'T.M.S v1.6',
+                                  'T.M.S v1.6.1',
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,

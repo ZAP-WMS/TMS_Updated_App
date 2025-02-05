@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:ticket_management_system/screens/resetpassword.dart';
 import 'package:ticket_management_system/utils/colors.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 class profile extends StatefulWidget {
   profile({required this.userID, Key? key}) : super(key: key);
@@ -27,14 +28,15 @@ class _profileState extends State<profile> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: appColor,
-          title: const Text('Profile'),
+          title: const Text(
+            'Profile',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         body: _isAvailableUserData
-            ? Center(
-                child: CircularProgressIndicator(
-                color: appColor,
-              ))
+            ? Center(child: LoadingPage())
             : Center(
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -113,7 +115,9 @@ class _profileState extends State<profile> {
                           child: const Text(
                             'Change Password',
                             style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 16),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.white),
                           )),
                     ],
                   ),

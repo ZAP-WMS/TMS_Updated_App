@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ticket_management_system/provider/filter_provider.dart';
+import 'package:ticket_management_system/widget/loading_page.dart';
 
 import '../utils/colors.dart';
 
@@ -34,8 +35,10 @@ class _NotificationScreen_serviceState
     var screenSize = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: appColor,
-          title: const Text('Notification'),
+          title:
+              const Text('Notification', style: TextStyle(color: Colors.white)),
         ),
         body: StreamBuilder(
           stream: FirebaseFirestore.instance
@@ -44,7 +47,7 @@ class _NotificationScreen_serviceState
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: LoadingPage());
             }
 
             if (snapshot.hasError) {
@@ -63,7 +66,8 @@ class _NotificationScreen_serviceState
               return const Center(child: Text('No notifications field found.'));
             }
 
-            List<dynamic> notifications = data['notifications'];
+            List<dynamic> reversedNotifications = data['notifications'];
+            List<dynamic> notifications = List.from(reversedNotifications.reversed);
 
             if (notifications.isEmpty) {
               return const Center(child: Text('No notifications found.'));
@@ -73,6 +77,7 @@ class _NotificationScreen_serviceState
               itemBuilder: (context, index) {
                 Map<String, dynamic> notification =
                     notifications[index] as Map<String, dynamic>;
+
                 Timestamp timestamp = notification['timestamp'];
                 String username = notification['userName'];
                 String ticketId = notification['TicketId'];
